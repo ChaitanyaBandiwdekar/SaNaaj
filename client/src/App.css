@@ -1,10 +1,20 @@
-.App {
+*{
+  margin: 0;
+  padding: 0;
+
+}
+body{
+  background-color: #DDAA00;
+  font-family: 'Montserrat', sans-serif;
+  
+}.App {
   text-align: center;
 }
 
 .App-logo {
   height: 40vmin;
 }
+
 
 .App-header {
   background-color: #282c34;
@@ -16,7 +26,16 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
-
+.footer {
+  background-color: #351E10;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  color: #DDAA00;
+  font-size: 20px;
+  padding-top: 0.5%;
+  padding-bottom: 0.5%;
+ }
 .App-link {
   color: #09d3ac;
 }
