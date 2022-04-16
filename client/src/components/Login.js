@@ -14,6 +14,8 @@ import { useLocation } from 'react-router-dom'
 import Header from './Header';
 import Footer from './Footer';
 import { red } from '@mui/material/colors';
+import Sanaaj from "../contracts/Sanaaj.json";
+import getWeb3 from "../getWeb3";
 
 function Copyright(props) {
   return (
@@ -31,14 +33,49 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function Login(props) {
+  
 
-  const handleSubmit = (event) => {
+  const handleSubmit  =async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    console.log('hello');
+    // try {
+      
+      
+      
+      const web3 = await getWeb3();
+      console.log(web3)
+
+      // Use web3 to get the user's accounts.
+      const accounts = await web3.eth.getAccounts();
+      console.log(accounts)
+      const networkId = await web3.eth.net.getId();
+
+      const deployedNetwork = Sanaaj.networks[networkId];
+      const instance = new web3.eth.Contract(
+        Sanaaj.abi,
+        deployedNetwork && deployedNetwork.address,
+      );
+      console.log('Instance found');
+
+      // Set web3, accounts, and contract to the state, and then proceed with an
+      // example of interacting with the contract's methods.
+      // this.setState({ web3, accounts, contract: instance }, this.runExample);
+      const data = new FormData(event.currentTarget);
     console.log({
-      email: data.get('email'),
+      email: data.get('id'),
       password: data.get('password'),
     });
+    // const consumer=await  instance.methods.getConsumer(data.get("id")).call();
+    // console.log(consumer)
+    // } catch (error) {
+    //   // Catch any errors for any of the above operations.
+    //   alert(
+    //     `Failed to load web3, accounts, or contract. Check console for details.`,
+    //   );
+    //   console.error(error);
+    // }
+    
+    
   };
 
   const location = useLocation()
