@@ -26,16 +26,27 @@ library AssetLibrary {
         string location;
         string password;
         bool isBlacklisted;
+        address wallet_addr;
+    }
+
+    struct Transaction {
+        string consumer_ration_id;
+        uint256 vendor_id;
+        uint256[] quantity;
+        string timestamp;
     }
 }
 
 contract Sanaaj {
+    uint256 transactionCount;
     mapping(string => AssetLibrary.Consumer) public consumerList;
     mapping(uint256 => AssetLibrary.Vendor) public vendorList;
     mapping(string => mapping(string => uint256)) public allowanceList;
     mapping(uint256 => mapping(string => uint256)) public stockList;
+    mapping(string => AssetLibrary.Transaction[]) public transactionList;
     string[] rationCardList;
     uint256[] vendorIDList;
+    address adminAddress;
     string adminPassword;
 
     constructor() public {
@@ -102,7 +113,8 @@ contract Sanaaj {
             "1029384756",
             "Mumbai",
             "hello987",
-            false
+            false,
+            0x675A7359e0d96b9A25DCA5d08e1f1Ee85B9cD24f
         );
         vendorList[2] = AssetLibrary.Vendor(
             2,
@@ -111,7 +123,8 @@ contract Sanaaj {
             "9087564132",
             "Mumbai",
             "hello9876",
-            false
+            false,
+            0x295b6AE0Efe05de0011E9316E27B560cCdCD3DDb
         );
 
         adminPassword = "admin1234";
@@ -123,6 +136,7 @@ contract Sanaaj {
             "MH9876504321"
         ];
         vendorIDList = [1, 2];
+        adminAddress = 0x1964F1519FF7ACAa5E6b2462070cB0d6817FbA4E;
     }
 
     function getConsumer(string memory _ration)
@@ -141,22 +155,18 @@ contract Sanaaj {
         return vendorList[_id];
     }
 
-    function getAllConsumers(uint256 _id, bool byVendor)
-        public
-        view
-        returns (string[] memory)
-    {
-        if (byVendor) {
-            string[] memory consumers;
-            uint256 count = 0;
-            for (uint256 i = 0; i < rationCardList.length; i++) {
-                if (consumerList[rationCardList[i]].vendor_id == _id) {
-                    consumers[count] = rationCardList[i];
-                    count++;
-                }
-            }
-            return consumers;
-        }
+    function getAllConsumers() public view returns (string[] memory) {
+        // if (byVendor) {
+        //     string[] memory consumers;
+        //     uint256 count = 0;
+        //     for (uint256 i = 0; i < rationCardList.length; i++) {
+        //         if (consumerList[rationCardList[i]].vendor_id == _id) {
+        //             consumers[count] = rationCardList[i];
+        //             count++;
+        //         }
+        //     }
+        //     return consumers;
+        // }
 
         return rationCardList;
     }
@@ -201,14 +211,40 @@ contract Sanaaj {
         return (rice, wheat, sugar, kerosene);
     }
 
+    // (ration, 2, [5, 10, 5, 2] )
+
     function updateAllowance(
         string memory _ration,
         uint256 _vendorID,
-        string memory commodity,
-        uint256 amount
+        uint256[] memory quantity_commodity,
+        string memory timestamp
     ) public {
-        allowanceList[_ration][commodity] -= amount;
-        stockList[_vendorID][commodity] -= amount;
+        allowanceList[_ration]["Rice"] -= quantity_commodity[0];
+        allowanceList[_ration]["Wheat"] -= quantity_commodity[1];
+        allowanceList[_ration]["Sugar"] -= quantity_commodity[2];
+        allowanceList[_ration]["Kerosene"] -= quantity_commodity[3];
+
+        stockList[_vendorID]["Rice"] -= quantity_commodity[0];
+        stockList[_vendorID]["Wheat"] -= quantity_commodity[1];
+        stockList[_vendorID]["Sugar"] -= quantity_commodity[2];
+        stockList[_vendorID]["Kerosene"] -= quantity_commodity[3];
+
+        transactionList[_ration].push(
+            AssetLibrary.Transaction(
+                _ration,
+                _vendorID,
+                quantity_commodity,
+                timestamp
+            )
+        );
+    }
+
+    function getTransactions(string memory _ration)
+        public
+        view
+        returns (AssetLibrary.Transaction[] memory)
+    {
+        return transactionList[_ration];
     }
 
     function refillAllowance(string memory _ration) public {

@@ -14,7 +14,6 @@ import shadows from "@mui/material/styles/shadows";
 import Header from "./Header";
 import Footer from "./Footer";
 
-
 class Landing extends Component {
     render() {
         return(
@@ -33,7 +32,7 @@ class Landing extends Component {
             >
                 
                     <Grid item xs={12} sm={6} md={3} key={1}  >
-                    <Link to="/login" state={{ name: "Consumer", id: "Ration card Id" }} style={{ textDecoration: 'none' }}>
+                    <Link to="/login-consumer" state={{ name: "Consumer", id: "Ration card Id" }} style={{ textDecoration: 'none' }}>
                 
                         <Card sx={{  backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"},  height:500 , borderRadius:5}}>
                     <CardActionArea>
@@ -57,7 +56,7 @@ class Landing extends Component {
                      </Grid>
 
                      <Grid item xs={12} sm={6} md={3} key={2} >
-                     <Link to="/login" state={{ name: "Vendor", id: "Vendor Id" }} style={{ textDecoration: 'none' }}>
+                     <Link to="/login-vendor" state={{ name: "Vendor", id: "Vendor Id" }} style={{ textDecoration: 'none' }}>
                         <Card sx={{ backgroundColor:'#FFF7E7', "&:hover":{backgroundColor:'white'} , height:500, borderRadius:5}}>
                     <CardActionArea>
                         <CardMedia
@@ -79,7 +78,7 @@ class Landing extends Component {
                      </Grid>
 
                      <Grid item xs={12} sm={6} md={3} key={3} >
-                     <Link to="/login" state={{ name: "Admin" }} style={{ textDecoration: 'none' }} >
+                     <Link to="/login-authority" state={{ name: "Admin" }} style={{ textDecoration: 'none' }} >
                         <Card sx={{  backgroundColor:'#FFF7E7', "&:hover":{backgroundColor:'white'} ,  height:500, borderRadius:5}}>
                     <CardActionArea>
                         <CardMedia

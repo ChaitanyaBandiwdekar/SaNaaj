@@ -1,12 +1,11 @@
 import React, { Component } from "react";
-import Sanaaj from "./contracts/Sanaaj.json";
-import getWeb3 from "./getWeb3";
-import Login from "./components/Login";
 import Landing from "./components/Landing";
 import { Routes, Route } from "react-router-dom";
 import "./App.css";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+
+import ConsumerLogin from "./components/Consumer/ConsumerLogin";
+import VendorLogin from "./components/Vendor/VendorLogin";
+import AuthorityLogin from "./components/Authority/AuthorityLogin";
 
 class App extends Component {
   state = { web3: null, 
@@ -94,8 +93,9 @@ class App extends Component {
         {/* <h1>Welcome to React Router!</h1> */}
         <Routes>
           <Route path="/" element={<Landing />} />
-          {/* <Route path="/login" element={<Login />} /> */}
-          <Route path="/login" element={<Login/>}/>
+          <Route path="/login-consumer" element={<ConsumerLogin/>}/>
+          <Route path="/login-vendor" element={<VendorLogin/>}/>
+          <Route path="/login-authority" element={<AuthorityLogin/>}/>
         </Routes>
         
       </div>

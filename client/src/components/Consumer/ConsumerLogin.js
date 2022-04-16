@@ -12,13 +12,12 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useLocation } from 'react-router-dom'
-import Header from './Header';
-import Footer from './Footer';
+import Header from '../Header';
+import Footer from '../Footer';
 import { red } from '@mui/material/colors';
-import Sanaaj from "../contracts/Sanaaj.json";
-import getWeb3 from "../getWeb3";
+import Sanaaj from "../../contracts/Sanaaj.json";
+import getWeb3 from "../../getWeb3";
 
-import Landing from './Landing';
 
 // function Copyright(props) {
 //   return (
@@ -36,11 +35,7 @@ import Landing from './Landing';
 const theme = createTheme();
 
 
-class Login extends React.Component {
-
-  // constructor(props) {
-
-  // }
+class ConsumerLogin extends React.Component {
 
   state = { web3: null, 
     accounts: null, 
@@ -49,16 +44,13 @@ class Login extends React.Component {
   };
   
   componentDidMount = async () => {
-    // this.handleSubmit = this.handleSubmit.bind(this);
     console.log('hello');
-    
     console.log('hello1')
 
     const web3 = await getWeb3();
     console.log(web3)
     console.log('hello2')
 
-    // Use web3 to get the user's accounts.
     const accounts = await web3.eth.getAccounts();
     console.log(accounts)
     const networkId = await web3.eth.net.getId();
@@ -74,36 +66,25 @@ class Login extends React.Component {
 
   handleSubmit = async (event) => {
     event.preventDefault();
+    const { contract, accounts } = this.state;
     // this.setState({ web3, accounts, contract: instance }, this.runExample);
     const data = new FormData(event.currentTarget);
     console.log({
-      email: data.get('id'),
+      ration: data.get('id'),
       password: data.get('password'),
     });
-    // const consumer = await instance.methods.getConsumer(data.get("id")).call();
-    // console.log(consumer)
-    // } catch (error) {
-    //   // Catch any errors for any of the above operations.
-    //   alert(
-    //     `Failed to load web3, accounts, or contract. Check console for details.`,
-    //   );
-    //   console.error(error);
-    // }
-    
+    console.log(typeof(data.get("id")));
+    const consumer = await contract.methods.getConsumer(data.get("id")).call();
+    await contract.methods.updateAllowance(data.get('id'), 1, [1, 1, 0, 1], Date().toLocaleString()).send({from: accounts[0]});
+    const transactions = await contract.methods.getTransactions(data.get("id")).call();
+    console.log(consumer);
+    console.log(transactions);
     
   };
 
   
   
   render(){ 
-    // const location = useLocation()
-    // const state1 = location.state
-    // this.setState({ state1 });
-
-    // if(!this.state.state1) 
-    //   return (<div>Wait kar</div>);
-    console.log(this.props.name);
-
     return (
     <ThemeProvider theme={theme}>
       <Header/>
@@ -137,25 +118,20 @@ class Login extends React.Component {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5" sx={{color:"#351E10", fontWeight:"bold"}}>
-              {/* { this.state.state1.name } Login */}
-              Login
+              Consumer Login
             </Typography>
             <Box component="form" noValidate onSubmit={this.handleSubmit} sx={{ mt: 1 }}>
-              <div>
-              { "Consumer" != "Admin" ? (<TextField
+              
+              <TextField
                 margin="normal"
                 required
                 fullWidth
-                id="email"
-                // label={this.state.state1.id}
+                id="ration"
+                label="Ration Card ID"
                 name="id"
-                autoComplete="email"
                 autoFocus
-              />) : (<h1></h1>)}
-              </div>             
-              
-              
-
+              />
+     
               <TextField
                 margin="normal"
                 required
@@ -167,6 +143,7 @@ class Login extends React.Component {
                 autoComplete="current-password"
                 
               />
+
               <Button
                 type="submit"
                 fullWidth
@@ -187,10 +164,4 @@ class Login extends React.Component {
 }
 }
 
-ReactDOM.render(
-  // passing props
-  <Landing />,
-  document.getElementById("root")
-);
-
-export default Login;
+export default ConsumerLogin;
