@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import Sanaaj from "./contracts/Sanaaj.json";
-import getWeb3 from "./getWeb3";
-import Login from "./components/Login";
 import Landing from "./components/Landing";
 import { Routes, Route } from "react-router-dom";
 import "./App.css";
+
+import ConsumerLogin from "./components/Consumer/ConsumerLogin";
+import VendorLogin from "./components/Vendor/VendorLogin";
+import AuthorityLogin from "./components/Authority/AuthorityLogin";
 
 class App extends Component {
   state = { web3: null, 
@@ -21,78 +22,82 @@ class App extends Component {
 
   
 
-  componentDidMount = async () => {
-    try {
-      this.handleSubmit = this.handleSubmit.bind(this);
-      // Get network provider and web3 instance.
-      const web3 = await getWeb3();
+  // componentDidMount = async () => {
+  //   try {
+  //     this.handleSubmit = this.handleSubmit.bind(this);
+  //     // Get network provider and web3 instance.
+  //     const web3 = await getWeb3();
 
-      // Use web3 to get the user's accounts.
-      const accounts = await web3.eth.getAccounts();
-      const networkId = await web3.eth.net.getId();
+  //     // Use web3 to get the user's accounts.
+  //     const accounts = await web3.eth.getAccounts();
+  //     const networkId = await web3.eth.net.getId();
 
-      const deployedNetwork = Sanaaj.networks[networkId];
-      const instance = new web3.eth.Contract(
-        Sanaaj.abi,
-        deployedNetwork && deployedNetwork.address,
-      );
+  //     const deployedNetwork = Sanaaj.networks[networkId];
+  //     const instance = new web3.eth.Contract(
+  //       Sanaaj.abi,
+  //       deployedNetwork && deployedNetwork.address,
+  //     );
 
-      // Set web3, accounts, and contract to the state, and then proceed with an
-      // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract: instance }, this.runExample);
-    } catch (error) {
-      // Catch any errors for any of the above operations.
-      alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`,
-      );
-      console.error(error);
-    }
-  };
+  //     // Set web3, accounts, and contract to the state, and then proceed with an
+  //     // example of interacting with the contract's methods.
+  //     this.setState({ web3, accounts, contract: instance }, this.runExample);
+  //   } catch (error) {
+  //     // Catch any errors for any of the above operations.
+  //     alert(
+  //       `Failed to load web3, accounts, or contract. Check console for details.`,
+  //     );
+  //     console.error(error);
+  //   }
+  // };
   
-  handleSubmit = async(event) => {
-      event.preventDefault();
+  // handleSubmit = async(event) => {
+  //     event.preventDefault();
    
-      console.log('do validate');
-      const { accounts, contract, phone } = this.state;
+  //     console.log('do validate');
+  //     const { accounts, contract, phone } = this.state;
 
-      // await contract.methods.updateAllowance(phone, event.target.value).send({from: accounts[0]});
-      // const consumers = contract1.methods.getAll().call();
-      const consumer = contract.methods.getConsumer(phone).call();
+  //     // await contract.methods.updateAllowance(phone, event.target.value).send({from: accounts[0]});
+  //     // const consumers = contract1.methods.getAll().call();
+  //     const consumer = contract.methods.getConsumer(phone).call();
 
-      this.setState({name: consumer[1], allowance: consumer[5]});
+  //     this.setState({name: consumer[1], allowance: consumer[5]});
   
     
-  }
+  // }
 
 
-  runExample = async () => {
-    const { contract, accounts, ration } = this.state;
+  // runExample = async () => {
+  //   const { contract, accounts, ration } = this.state;
     
-    // Get the value from the contract to prove it worked.
-    console.log(typeof(accounts[0]));
-    // const phone = await contract.methods.getPhoneNumber(accounts[0]).call();
-    // console.log(phone);
-    const consumer = await contract.methods.getConsumer(ration).call();
-    console.log(consumer);
-    // const consumers = await contract.methods.getAll().call();
-    const alw = await contract.methods.getAllowance(ration).call();
-    console.log(alw);
-    const consumers = await contract.methods.getAllConsumers(1, false).call();
-    console.log(consumers);
-    // Update state with the result.
-    this.setState({name: consumer[2], allowance: alw});
+  //   // Get the value from the contract to prove it worked.
+    
+  //   // const phone = await contract.methods.getPhoneNumber(accounts[0]).call();
+  //   // console.log(phone);
+  //   const consumer = await contract.methods.getConsumer(ration).call();
+  //   // console.log(consumer);
+  //   // const consumers = await contract.methods.getAll().call();
+  //   const alw = await contract.methods.getAllowance(ration).call();
+  //   // console.log(alw);
+  //   const consumers = await contract.methods.getAllConsumers(1, false).call();
+  //   // console.log(consumers);
+  //   // Update state with the result.
+  //   this.setState({name: consumer[2], allowance: alw});
 
-    // this.setState({ storageValue: response })
-  };
+  //   // this.setState({ storageValue: response })
+  // };
 
   render() {
     return (
       <div className="App">
-        <h1>Welcome to React Router!</h1>
+        
+        {/* <h1>Welcome to React Router!</h1> */}
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login-consumer" element={<ConsumerLogin/>}/>
+          <Route path="/login-vendor" element={<VendorLogin/>}/>
+          <Route path="/login-authority" element={<AuthorityLogin/>}/>
         </Routes>
+        
       </div>
     );
     // if (!this.state.web3) {

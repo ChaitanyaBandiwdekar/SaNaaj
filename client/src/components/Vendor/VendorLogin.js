@@ -11,14 +11,12 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useLocation } from 'react-router-dom'
-import Header from './Header';
-import Footer from './Footer';
-import { red } from '@mui/material/colors';
-import Sanaaj from "../contracts/Sanaaj.json";
-import getWeb3 from "../getWeb3";
+import Header from '../Header';
+import Footer from '../Footer';
 
-import Landing from './Landing';
+import Sanaaj from "../../contracts/Sanaaj.json";
+import getWeb3 from "../../getWeb3";
+
 
 // function Copyright(props) {
 //   return (
@@ -36,11 +34,7 @@ import Landing from './Landing';
 const theme = createTheme();
 
 
-class Login extends React.Component {
-
-  // constructor(props) {
-
-  // }
+class VendorLogin extends React.Component {
 
   state = { web3: null, 
     accounts: null, 
@@ -49,16 +43,14 @@ class Login extends React.Component {
   };
   
   componentDidMount = async () => {
-    // this.handleSubmit = this.handleSubmit.bind(this);
+
     console.log('hello');
-    
     console.log('hello1')
 
     const web3 = await getWeb3();
     console.log(web3)
     console.log('hello2')
 
-    // Use web3 to get the user's accounts.
     const accounts = await web3.eth.getAccounts();
     console.log(accounts)
     const networkId = await web3.eth.net.getId();
@@ -96,14 +88,6 @@ class Login extends React.Component {
   
   
   render(){ 
-    // const location = useLocation()
-    // const state1 = location.state
-    // this.setState({ state1 });
-
-    // if(!this.state.state1) 
-    //   return (<div>Wait kar</div>);
-    console.log(this.props.name);
-
     return (
     <ThemeProvider theme={theme}>
       <Header/>
@@ -137,25 +121,20 @@ class Login extends React.Component {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5" sx={{color:"#351E10", fontWeight:"bold"}}>
-              {/* { this.state.state1.name } Login */}
-              Login
+              Vendor Login
             </Typography>
             <Box component="form" noValidate onSubmit={this.handleSubmit} sx={{ mt: 1 }}>
-              <div>
-              { "Consumer" != "Admin" ? (<TextField
+              
+              <TextField
                 margin="normal"
                 required
                 fullWidth
-                id="email"
-                // label={this.state.state1.id}
+                id="vendor"
+                label="Vendor ID"
                 name="id"
-                autoComplete="email"
                 autoFocus
-              />) : (<h1></h1>)}
-              </div>             
-              
-              
-
+              />
+     
               <TextField
                 margin="normal"
                 required
@@ -167,6 +146,7 @@ class Login extends React.Component {
                 autoComplete="current-password"
                 
               />
+              
               <Button
                 type="submit"
                 fullWidth
@@ -187,10 +167,4 @@ class Login extends React.Component {
 }
 }
 
-ReactDOM.render(
-  // passing props
-  <Landing />,
-  document.getElementById("root")
-);
-
-export default Login;
+export default VendorLogin;
