@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ReactDOM from 'react-dom';
+import { useState, useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,54 +11,33 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useLocation } from 'react-router-dom'
-import Header from './Header';
-import Footer from './Footer';
-import { red } from '@mui/material/colors';
-import Sanaaj from "../contracts/Sanaaj.json";
-import getWeb3 from "../getWeb3";
+import Header from '../Header';
+import Footer from '../Footer';
+import Sanaaj from "../../contracts/Sanaaj.json";
+import getWeb3 from "../../getWeb3";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
-import Landing from './Landing';
-
-// function Copyright(props) {
-//   return (
-//     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-//       {'Copyright © '}
-//       <Link color="inherit" href="https://mui.com/">
-//         Your Website
-//       </Link>{' '}
-//       {new Date().getFullYear()}
-//       {'.'}
-//     </Typography>
-//   );
-// }
 
 const theme = createTheme();
 
 
-class Login extends React.Component {
-
-  // constructor(props) {
-
-  // }
-
-  state = { web3: null, 
-    accounts: null, 
-    contract: null,
-    state1: null
-  };
-  
-  componentDidMount = async () => {
-    // this.handleSubmit = this.handleSubmit.bind(this);
+function Login() {
+  const [web3, setWeb3] = useState(null);
+  const [accounts, setAccounts] = useState(null);
+  const [contract, setContract] = useState(null);
+  // let navigate = useNavigate();
+  const location = useLocation();
+  const state1 = location.state;
+  // Similar to componentDidMount and componentDidUpdate:
+  useEffect(async () => {
     console.log('hello');
-    
     console.log('hello1')
 
     const web3 = await getWeb3();
     console.log(web3)
     console.log('hello2')
 
-    // Use web3 to get the user's accounts.
     const accounts = await web3.eth.getAccounts();
     console.log(accounts)
     const networkId = await web3.eth.net.getId();
@@ -69,47 +48,63 @@ class Login extends React.Component {
       deployedNetwork && deployedNetwork.address,
     );
     console.log('Instance found');
-    this.setState({ web3, accounts, contract: instance });
-  }
+    // setState({ web3, accounts, contract: instance });
+    setWeb3(web3);
+    setAccounts(accounts);
+    setContract(instance);
+  });
 
-  handleSubmit = async (event) => {
-    event.preventDefault();
-    // this.setState({ web3, accounts, contract: instance }, this.runExample);
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('id'),
-      password: data.get('password'),
-    });
-    // const consumer = await instance.methods.getConsumer(data.get("id")).call();
-    // console.log(consumer)
-    // } catch (error) {
-    //   // Catch any errors for any of the above operations.
-    //   alert(
-    //     `Failed to load web3, accounts, or contract. Check console for details.`,
-    //   );
-    //   console.error(error);
-    // }
+  const handleSubmit = async (event) => {
+        event.preventDefault();
+        // const { contract, accounts } = this.state;
+        // this.setState({ web3, accounts, contract: instance }, this.runExample);
+        const data = new FormData(event.currentTarget);
+        console.log({
+          ration: data.get('id'),
+          password: data.get('password'),
+        });
+        console.log(typeof(data.get("id")));
+        const consumer = await contract.methods.getConsumer(data.get("id")).call();
+        // await contract.methods.updateAllowance(data.get('id'), 1, [1, 1, 0, 1], Date().toLocaleString()).send({from: accounts[0]});
+        // const transactions = await contract.methods.getTransactions(data.get("id")).call();
+        console.log(consumer);
+        // console.log(transactions);
     
+        console.log(consumer[7]);
     
-  };
+        // let navigate = useNavigate();
+    
+        if(data.get('password') == consumer[7]){
+          if(consumer[8] == accounts[0]){
+            // this.navigate('/consumer-home');
+            console.log("GG");
+            navigate('/consumer-home');
+            // this.props.history.push("/login-consumer");
+            // return <Navigate replace={true} to="/consumer-home" />
+            // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
+            // window.location.href='/consumer-home';
+          
+          }
+          else{
+            // console.log("Incorrect wallet address");
+            // navigate.push('/login-consumer');
+            // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
+          }
+        }
+        else{
+          // console.log("Incorrect password");
+          // navigate.push('/login-consumer');
+          // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
+        }
+        
+      };
 
-  
-  
-  render(){ 
-    // const location = useLocation()
-    // const state1 = location.state
-    // this.setState({ state1 });
-
-    // if(!this.state.state1) 
-    //   return (<div>Wait kar</div>);
-    console.log(this.props.name);
-
-    return (
+  return (
     <ThemeProvider theme={theme}>
       <Header/>
       <Grid container component="main" sx={{ height: '90vh' }}>
         <CssBaseline />
-        <Grid
+         <Grid
           item
           xs={false}
           sm={4}
@@ -137,25 +132,20 @@ class Login extends React.Component {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5" sx={{color:"#351E10", fontWeight:"bold"}}>
-              {/* { this.state.state1.name } Login */}
-              Login
+              Consumer Login
             </Typography>
-            <Box component="form" noValidate onSubmit={this.handleSubmit} sx={{ mt: 1 }}>
-              <div>
-              { "Consumer" != "Admin" ? (<TextField
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+              
+              <TextField
                 margin="normal"
                 required
                 fullWidth
-                id="email"
-                // label={this.state.state1.id}
+                id="ration"
+                label="Ration Card ID"
                 name="id"
-                autoComplete="email"
                 autoFocus
-              />) : (<h1></h1>)}
-              </div>             
-              
-              
-
+              />
+     
               <TextField
                 margin="normal"
                 required
@@ -167,6 +157,7 @@ class Login extends React.Component {
                 autoComplete="current-password"
                 
               />
+
               <Button
                 type="submit"
                 fullWidth
@@ -185,12 +176,5 @@ class Login extends React.Component {
     </ThemeProvider>
   );
 }
-}
-
-ReactDOM.render(
-  // passing props
-  <Landing />,
-  document.getElementById("root")
-);
 
 export default Login;

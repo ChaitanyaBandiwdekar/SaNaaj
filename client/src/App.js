@@ -6,6 +6,8 @@ import "./App.css";
 import ConsumerLogin from "./components/Consumer/ConsumerLogin";
 import VendorLogin from "./components/Vendor/VendorLogin";
 import AuthorityLogin from "./components/Authority/AuthorityLogin";
+import ConsumerHome from "./components/Consumer/ConsumerHome";
+import VendorHome from "./components/Vendor/VendorHome";
 
 class App extends Component {
   state = { web3: null, 
@@ -96,6 +98,8 @@ class App extends Component {
           <Route path="/login-consumer" element={<ConsumerLogin/>}/>
           <Route path="/login-vendor" element={<VendorLogin/>}/>
           <Route path="/login-authority" element={<AuthorityLogin/>}/>
+          <Route path="/consumer-home" element={<ConsumerHome />} />
+          <Route path="/vendor-home" element={<VendorHome />} />
         </Routes>
         
       </div>

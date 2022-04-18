@@ -20,7 +20,7 @@ import Sanaaj from "../../contracts/Sanaaj.json";
 import getWeb3 from "../../getWeb3";
 
 
-function ConsumerHome() {
+function VendorHome() {
     const [web3, setWeb3] = useState(null);
     const [accounts, setAccounts] = useState(null);
     const [contract, setContract] = useState(null);
@@ -105,8 +105,8 @@ function ConsumerHome() {
         };
   
     return (
-      <h1>Consumer Home</h1>
+      <h1>Vendor Home</h1>
     );
   }
   
-export default ConsumerHome;
+export default VendorHome;

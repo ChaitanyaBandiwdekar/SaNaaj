@@ -32,7 +32,7 @@ class Landing extends Component {
             >
                 
                     <Grid item xs={12} sm={6} md={3} key={1}  >
-                    <Link to="/login-consumer" state={{ name: "Consumer", id: "Ration card Id" }} style={{ textDecoration: 'none' }}>
+                    <Link to="/login-consumer" state={{ name: "Consumer", id: "Ration card Id", reload: true }} style={{ textDecoration: 'none' }}>
                 
                         <Card sx={{  backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"},  height:500 , borderRadius:5}}>
                     <CardActionArea>

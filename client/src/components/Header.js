@@ -26,7 +26,7 @@ class Header extends Component{
            can render various icons*/}
           <Typography variant="h6" 
             component="div" sx={{ flexGrow: 1 }} style={{color: "#DDAA00", fontSize: 25}}>
-            SaNaaj- Samaaj Ka Anaaj
+            SaNaaj - Samaaj Ka Anaaj
           </Typography>
           
         </Toolbar>
