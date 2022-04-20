@@ -125,7 +125,7 @@ function ConsumerHome(props) {
               <hr></hr>
             </List>
             </ListItem> */
-            <Box sx={{ width: '95%', borderColor: 'grey.500', border: 1, padding: 1 , borderRadius: 2}}>
+            <Box sx={{ width: '95%', borderColor: 'grey.500', border: 1, padding: 1 , borderRadius: 2, marginBottom: 2}}>
               <Grid container spacing={1} columns={16}>
         <Grid item xs={8}>
           
@@ -157,6 +157,7 @@ function ConsumerHome(props) {
             </Grid>
             
           </Box>
+          
            
           
                                 
@@ -223,8 +224,6 @@ function ConsumerHome(props) {
   
     return (
       <div>
-         <Header></Header><br></br>
-         
          
          <Grid
                 container
@@ -234,11 +233,11 @@ function ConsumerHome(props) {
                 justifyContent="space-evenly"
                 alignItems="stretch"
                 
-                style={{  width: '100%' }}
+                style={{  width: '100%', gap: 0, padding:0, margin:0 }}
             >
                 
-                    <Grid item xs={12} sm={6} md={3} key={1}  >
-                    <Box sx={{  backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"},  height:500 , borderRadius:5}}>
+                    <Grid item xs={12} sm={3} key={1} padding={0} >
+                    <Box sx={{ margin:1, backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"}, width: 1,  height:500 , borderRadius:5}}>
                    
                         <div>
                         {/* <IconButton ><AccountCircleIcon style={{color:"#351E10", fontSize:90}}></AccountCircleIcon> </IconButton> */}
@@ -332,16 +331,16 @@ function ConsumerHome(props) {
                     
                      </Grid>
 
-                     <Grid item xs={12} sm={6} md={3} key={2} >
+                     <Grid item xs={12} sm={5} key={2} >
                      <Card sx={{  backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"},  height:500 , borderRadius:5}}>
                     <CardActionArea>
                         <CardContent>
                         
                         <Typography gutterBottom variant="h5" component="div" style={{color: "#351E10", fontSize: 25, fontWeight:"bold"}}>
                         My transactions
-                        <List  sx={{ width: '100%'}}>
-                        {transactionlist[0]}
-
+                        <List sx={{ width: '100%' }}>
+                        {transactionlist}
+    
                         </List>
                         <p></p>
                         </Typography>
@@ -353,7 +352,7 @@ function ConsumerHome(props) {
                      
                      </Grid>
 
-                     <Grid item xs={12} sm={6} md={3} key={3} >
+                     <Grid item xs={12} sm={4} key={3} >
                      <Card sx={{  backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"},  height:500 , borderRadius:5}}>
                     <CardActionArea>
                         <CardContent>

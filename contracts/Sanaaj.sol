@@ -44,6 +44,7 @@ contract Sanaaj {
     mapping(string => mapping(string => uint256)) public allowanceList;
     mapping(uint256 => mapping(string => uint256)) public stockList;
     mapping(string => AssetLibrary.Transaction[]) public transactionList;
+    mapping(string => AssetLibrary.Transaction[]) public pendingTransactionList;
     string[] rationCardList;
     uint256[] vendorIDList;
     address adminAddress;
@@ -59,7 +60,7 @@ contract Sanaaj {
             "Mumbai",
             1,
             "Hello123",
-            0xD905f36ceDFfC58c3B16A3Dd0759Ef8cd3DCea8a
+            0x9345BaF04A62F6A91d20aa08121a16eB39308b70
         );
         consumerList["MH1234509876"] = AssetLibrary.Consumer(
             "MH1234509876",
