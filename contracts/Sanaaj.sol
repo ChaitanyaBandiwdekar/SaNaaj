@@ -35,6 +35,13 @@ library AssetLibrary {
         uint256[] quantity;
         string timestamp;
     }
+
+    struct Complaint {
+        string ration_id;
+        uint256 vendor_id;
+        string complaint_content;
+        string time;
+    }
 }
 
 contract Sanaaj {
@@ -45,6 +52,7 @@ contract Sanaaj {
     mapping(uint256 => mapping(string => uint256)) public stockList;
     mapping(string => AssetLibrary.Transaction[]) public transactionList;
     mapping(string => AssetLibrary.Transaction[]) public pendingTransactionList;
+    AssetLibrary.Complaint[] public complaintList;
     string[] rationCardList;
     uint256[] vendorIDList;
     address adminAddress;
@@ -330,5 +338,29 @@ contract Sanaaj {
         );
 
         vendorList[vendor_id] = vendor;
+    }
+
+    function addComplaint(
+        string memory ration_id,
+        uint256 vendor_id,
+        string memory complaint_content,
+        string memory time
+    ) public {
+        AssetLibrary.Complaint memory complaint = AssetLibrary.Complaint(
+            ration_id,
+            vendor_id,
+            complaint_content,
+            time
+        );
+
+        complaintList.push(complaint);
+    }
+
+    function getAllComplaints()
+        public
+        view
+        returns (AssetLibrary.Complaint[] memory)
+    {
+        return complaintList;
     }
 }
