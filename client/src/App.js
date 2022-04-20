@@ -9,6 +9,7 @@ import AuthorityLogin from "./components/Authority/AuthorityLogin";
 import ConsumerHome from "./components/Consumer/ConsumerHome";
 import VendorHome from "./components/Vendor/VendorHome";
 import Header from "./components/Header";
+import AuthorityHome from "./components/Authority/AuthorityHome";
 
 class App extends Component {
   state = { web3: null, 
@@ -101,6 +102,8 @@ class App extends Component {
           <Route path="/login-authority" element={<AuthorityLogin/>}/>
           <Route path="/consumer-home" element={<ConsumerHome />} />
           <Route path="/vendor-home" element={<VendorHome />} />
+          
+          <Route path="/authority-home" element={<AuthorityHome />} />
         </Routes>
         
       </div>
