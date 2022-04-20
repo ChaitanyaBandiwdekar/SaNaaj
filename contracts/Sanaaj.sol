@@ -68,7 +68,7 @@ contract Sanaaj {
             "Mumbai",
             1,
             "Hello123",
-            0xD905f36ceDFfC58c3B16A3Dd0759Ef8cd3DCea8a
+            0xFc43ee9441590F044136fC8B225483188a11de92
         );
         consumerList["MH1234509876"] = AssetLibrary.Consumer(
             "MH1234509876",
@@ -123,7 +123,7 @@ contract Sanaaj {
             "Mumbai",
             "hello987",
             false,
-            0x675A7359e0d96b9A25DCA5d08e1f1Ee85B9cD24f
+            0xbC7B67cB47ba61DE49cc9c3774E98D9C5EDF0eB8
         );
         vendorList[2] = AssetLibrary.Vendor(
             2,
