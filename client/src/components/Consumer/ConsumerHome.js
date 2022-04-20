@@ -35,7 +35,7 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import BadgeIcon from '@mui/icons-material/Badge';
 import PhoneIcon from '@mui/icons-material/Phone';
 import HomeIcon from '@mui/icons-material/Home';
-// import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 
 function ConsumerHome(props) {
     const [web3, setWeb3] = useState(null);
@@ -132,20 +132,20 @@ function ConsumerHome(props) {
               <hr></hr>
             </List>
             </ListItem> */
-            <Card sx={{ minWidth: 275, backgroundColor:'whitesmoke', padding: 1, margin: 1}}>
+            <Card sx={{ minWidth: 275, padding: 1, margin: 1, backgroundColor:"#DDAA00"}}>
               <CardContent>
               <Grid container spacing={1} columns={16} style={{fontFamily: 'Montserrat'}}>
         <Grid item xs={8}>
           
-            <h6 style={{backgoundColor: "none"}}>Transaction : {index+1}</h6>
+            <h5 style={{backgoundColor: "#DDAA00"}}>Transaction : {index+1}</h5>
           
           
         </Grid>
-        <Grid item xs={8} fontSize={15}>
-          Time: {transaction[3]}
+        <Grid item xs={7}>
+        <h5 style={{backgoundColor: "#DDAA00"}}>Time: {transaction[3]}</h5>
         </Grid>
       </Grid>
-      <h6 >Quantity </h6>
+      <h6>Quantity </h6>
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
               <Grid item xs={6}>
                 <Item><h6>Rice: {transaction[2][0]}</h6></Item>
@@ -244,18 +244,22 @@ function ConsumerHome(props) {
             >
                 
                     <Grid item xs={12} sm={3} key={1} padding={0}  >
-                    <Box sx={{ padding: 1, backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"}, width: 1,  height:'80vh' , borderRadius:5}}>
+                    <Box sx={{ padding: 1, width: 1,  height:'80vh' }}>
                    
                         <div>
+                          
+                        
                         {/* <IconButton ><AccountCircleIcon style={{color:"#351E10", fontSize:90}}></AccountCircleIcon> </IconButton> */}
-                        <Typography gutterBottom variant="h5" component="div" style={{color: "#351E10", fontSize: 25, fontWeight:"bold"}}>
-                        My Profile
-                        </Typography>
-                        <Card sx={{ minWidth: 275, backgroundColor:'whitesmoke', margin: 1, textAlign: 'left'}}>
+                        {/* <Typography gutterBottom variant="h5" component="div" style={{display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10", fontSize: 25, fontWeight:"bold"}}>
+                        <AccountCircleIcon style={{fontSize:30, }}></AccountCircleIcon>My Profile
+                        </Typography> */}
+                        
+                        <Card sx={{ minWidth: 275, backgroundColor:'whitesmoke', "&:hover":{backgroundColor: "white"},margin: 1, textAlign: 'left',borderRadius:2}}>
                           <CardContent>
-                              <AccountCircleIcon />
-                              <CreditCardIcon sx={{ position: 'relative', top: 5}}/> {consumer[0]} <br></br> <br></br>
+                            <p style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10", fontSize: 20, fontWeight:"bold"}}> <AccountCircleIcon style={{fontSize:30, }}></AccountCircleIcon>My Profile</p>
+                              <br></br><hr></hr><br></br>
                               <BadgeIcon sx={{ position: 'relative', top: 5}}/> {consumer[2]} {consumer[3]} <br></br> <br></br>
+                              <CreditCardIcon sx={{ position: 'relative', top: 5}}/> {consumer[0]} <br></br> <br></br>
                               <PhoneIcon sx={{ position: 'relative', top: 5}}/> {consumer[4]} <br></br> <br></br>
                               <HomeIcon sx={{ position: 'relative', top: 5}}/> {consumer[5]} <br></br> <br></br>
                           </CardContent>
@@ -269,18 +273,19 @@ function ConsumerHome(props) {
                      </Grid>
 
                      <Grid item xs={12} sm={5} key={2} >
-                     <Box sx={{  backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"} , borderRadius:5,  height:'80vh'}}>
+                     <Box sx={{borderRadius:2,  height:'80vh'}}>
                     
                         <div>
-                        
-                        <Typography gutterBottom variant="h5" component="div" style={{color: "#351E10", fontSize: 25, fontWeight:"bold"}}>
-                        My transactions
-                        <List sx={{ width: '100%', maxHeight: 530, overflowY: 'scroll' }} className="scroll">
+                        <Card sx={{ minWidth: 275 ,backgroundColor:'whitesmoke', "&:hover":{backgroundColor: "white"},margin: 1, textAlign: 'left',borderRadius:2}}>
+                          <CardContent>
+                            <p style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10", fontSize: 20, fontWeight:"bold"}}> <ReceiptLongIcon style={{fontSize:30, }}></ReceiptLongIcon>My Transactions</p>
+                              <br></br><hr></hr><br></br>
+                              <List sx={{ width: '100%', maxHeight: 530, overflowY: 'scroll' }} className="scroll">
                         {transactionlist}
-    
-                        </List>
-                        <p></p>
-                        </Typography>
+                              </List>
+                              </CardContent>
+                              </Card>
+                       
                         
                         
                         </div>
@@ -290,16 +295,26 @@ function ConsumerHome(props) {
                      </Grid>
 
                      <Grid item xs={12} sm={3} key={3} >
-                     <Box sx={{ backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"}, width: 1,  height:'80vh' , borderRadius:5}}>
+                     <Box sx={{  width: 1,  height:'80vh' , borderRadius:5}}>
                    
                         <div>
+                        <Card sx={{ minWidth: 275, backgroundColor:'whitesmoke', "&:hover":{backgroundColor: "white"},margin: 1, textAlign: 'left',borderRadius:2}}>
+                          <CardContent>
+                            <p style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10", fontSize: 20, fontWeight:"bold"}}> <AccountCircleIcon style={{fontSize:30, }}></AccountCircleIcon>My Allowance</p>
+                              <br></br><hr></hr><br></br>
+                              <BadgeIcon sx={{ position: 'relative', top: 5}}/>  Rice: {allowance[0]} <br></br> <br></br>
+                              <CreditCardIcon sx={{ position: 'relative', top: 5}}/>Wheat: {allowance[1]} <br></br> <br></br>
+                              <PhoneIcon sx={{ position: 'relative', top: 5}}/>  Sugar: {allowance[2]} <br></br> <br></br>
+                              <HomeIcon sx={{ position: 'relative', top: 5}}/> Kerosene:  {allowance[3]}<br></br> <br></br>
+                              </CardContent>
+                              </Card>
                         {/* <IconButton ><AccountCircleIcon style={{color:"#351E10", fontSize:90}}></AccountCircleIcon> </IconButton> */}
-                        <Typography gutterBottom variant="h5" component="div" style={{color: "#351E10", fontSize: 25, fontWeight:"bold"}}>
+                        {/* <Typography gutterBottom variant="h5" component="div" style={{color: "#351E10", fontSize: 25, fontWeight:"bold"}}>
                         Allowance
                         
 
-                        </Typography>
-                        <List sx={{ width: '100%'}}>
+                        </Typography> */}
+                        {/* <List sx={{ width: '100%'}}>
                           <ListItem alignItems="flex-start">
                             <ListItemText
                               primary="Rice"
@@ -317,9 +332,9 @@ function ConsumerHome(props) {
                               }
                             />
                           </ListItem>
-                          <hr></hr>
+                          <hr></hr> */}
                           {/* <Divider variant="inset" component="li" /> */}
-                          <ListItem alignItems="flex-start">
+                          {/* <ListItem alignItems="flex-start">
                             <ListItemText
                               primary="Wheat"
                               secondary={
@@ -376,7 +391,7 @@ function ConsumerHome(props) {
                           </ListItem>
                           <hr></hr>
                         </List>
-                        
+                         */}
                         </div>
                    
                 </Box>
