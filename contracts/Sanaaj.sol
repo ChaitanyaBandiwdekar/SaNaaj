@@ -280,4 +280,54 @@ contract Sanaaj {
     function updateCardType(string memory _ration, uint256 card_type) public {
         consumerList[_ration].ration_card_type = card_type;
     }
+
+    function addConsumer(
+        string ration_card,
+        uint256 ration_card_type,
+        string first_name,
+        string last_name,
+        string phone,
+        string location,
+        uint256 vendor_id,
+        string password,
+        address wallet_addr
+    ) public {
+        AssetLibrary.Consumer consumer = new AssetLibrary.Consumer(
+            ration_card,
+            ration_card_type,
+            first_name,
+            last_name,
+            phone,
+            location,
+            vendor_id,
+            password,
+            wallet_addr
+        );
+
+        consumerList[ration_card] = consumer;
+    }
+
+    function addVendor(
+        uint256 vendor_id,
+        string first_name,
+        string last_name,
+        string phone,
+        string location,
+        string password,
+        bool isBlacklisted,
+        address wallet_addr
+    ) public {
+        AssetLibrary.Vendor vendor = AssetLibrary.Vendor(
+            vendor_id,
+            first_name,
+            last_name,
+            phone,
+            location,
+            password,
+            isBlacklisted,
+            wallet_addr
+        );
+
+        vendorList[vendor_id] = vendor;
+    }
 }

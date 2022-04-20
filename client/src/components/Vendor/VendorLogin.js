@@ -292,7 +292,6 @@ function VendorLogin() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Header/>
       <Grid container component="main" sx={{ height: '90vh' }}>
          <CssBaseline />
          <Grid

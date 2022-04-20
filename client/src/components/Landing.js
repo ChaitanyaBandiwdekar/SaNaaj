@@ -17,10 +17,9 @@ import Footer from "./Footer";
 class Landing extends Component {
     render() {
         return(
-            <div className="Landing" >
-                <Header/><br></br>
-                
-                
+            <div className="Landing" >                
+                <br />
+                <br />
                 <Grid
                 container
                 direction="row"

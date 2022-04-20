@@ -105,7 +105,9 @@ function VendorHome() {
         };
   
     return (
-      <h1>Vendor Home</h1>
+      <div className='VendorHome'>
+        <h1>Vendor Home</h1>
+      </div>
     );
   }
   

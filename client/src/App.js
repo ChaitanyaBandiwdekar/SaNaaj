@@ -8,6 +8,7 @@ import VendorLogin from "./components/Vendor/VendorLogin";
 import AuthorityLogin from "./components/Authority/AuthorityLogin";
 import ConsumerHome from "./components/Consumer/ConsumerHome";
 import VendorHome from "./components/Vendor/VendorHome";
+import Header from "./components/Header";
 
 class App extends Component {
   state = { web3: null, 
@@ -91,7 +92,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        
+        <Header/>
         {/* <h1>Welcome to React Router!</h1> */}
         <Routes>
           <Route path="/" element={<Landing />} />

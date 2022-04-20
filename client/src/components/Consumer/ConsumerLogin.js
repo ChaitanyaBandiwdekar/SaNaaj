@@ -200,6 +200,8 @@ function ConsumerLogin() {
   const [passErr, setPassErr] = useState(false);
   const [addrErr, setAddrErr] = useState(false);
   const [idErr, setIdErr] = useState(false);
+  const [number, setNumber] = useState("");
+  const [body, setBody] = useState("");
   let navigate = useNavigate();
   const location = useLocation();
   let state1 = location.state;
@@ -301,7 +303,7 @@ function ConsumerLogin() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Header/>
+      
       <Grid container component="main" sx={{ height: '90vh' }}>
         <CssBaseline />
          <Grid
