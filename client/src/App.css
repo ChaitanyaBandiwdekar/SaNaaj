@@ -3,6 +3,10 @@
   padding: 0;
 
 }
+html, body, #app, #app>div {
+  height: 100%
+}
+
 body{
   background-color: #DDAA00;
   font-family: 'Montserrat', sans-serif;
@@ -42,4 +46,18 @@ body{
  }
 .App-link {
   color: #09d3ac;
+}
+
+.scroll::-webkit-scrollbar {
+  width: 8px;
+}
+ 
+.scroll::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 20px;
+}
+
+.scroll::-webkit-scrollbar-track {
+  background: #ddd;
+  border-radius: 20px;
 }

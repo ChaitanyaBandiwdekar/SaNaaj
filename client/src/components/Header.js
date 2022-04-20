@@ -25,7 +25,7 @@ class Header extends Component{
           {/*Inside the IconButton, we 
            can render various icons*/}
           <Typography variant="h6" 
-            component="div" sx={{ flexGrow: 1 }} style={{color: "#DDAA00", fontSize: 25}}>
+            component="div" sx={{ flexGrow: 1 }} style={{color: "#DDAA00", fontSize: 25, fontFamily: 'Montserrat'}}>
             SaNaaj - Samaaj Ka Anaaj
           </Typography>
           {/* <Button color="inherit" height="20"><img src={logo} height="50"></img></Button> */}

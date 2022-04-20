@@ -31,8 +31,11 @@ import ListItem from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
 import ListItemText from '@mui/material/ListItemText';
 import { styled } from '@mui/material/styles';
-
-
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import BadgeIcon from '@mui/icons-material/Badge';
+import PhoneIcon from '@mui/icons-material/Phone';
+import HomeIcon from '@mui/icons-material/Home';
+// import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 function ConsumerHome(props) {
     const [web3, setWeb3] = useState(null);
@@ -43,6 +46,7 @@ function ConsumerHome(props) {
     const [allowance, setAllowance] = useState({});
     const [transactions, setTransactions] = useState({});
     const [transactionlist, setTransactionlist] = useState([]);
+    const [consumer, setConsumer] = useState([]);
     const theme = createTheme();
     const location = useLocation();
     // const state1 = location.state;
@@ -80,6 +84,9 @@ function ConsumerHome(props) {
       console.log(allowance1);
       setAllowance(allowance1);
       console.log(allowance);
+      const consumer1=await instance.methods.getConsumer(consumerId).call();
+      setConsumer(consumer1)
+      console.log(consumer1)
       const transaction1 = await instance.methods.getTransactions(consumerId).call();
       console.log(transaction1);
       setTransactions(transaction1);
@@ -125,19 +132,17 @@ function ConsumerHome(props) {
               <hr></hr>
             </List>
             </ListItem> */
-            <Box sx={{ width: '95%', borderColor: 'grey.500', border: 1, padding: 1 , borderRadius: 2, marginBottom: 2}}>
-              <Grid container spacing={1} columns={16}>
+            <Card sx={{ minWidth: 275, backgroundColor:'whitesmoke', padding: 1, margin: 1}}>
+              <CardContent>
+              <Grid container spacing={1} columns={16} style={{fontFamily: 'Montserrat'}}>
         <Grid item xs={8}>
           
             <h6 style={{backgoundColor: "none"}}>Transaction : {index+1}</h6>
           
           
         </Grid>
-        <Grid item xs={8}>
-          
-            <h6> Time: {transaction[3]}</h6>
-          
-         
+        <Grid item xs={8} fontSize={15}>
+          Time: {transaction[3]}
         </Grid>
       </Grid>
       <h6 >Quantity </h6>
@@ -155,8 +160,10 @@ function ConsumerHome(props) {
                 <Item><h6>Kerosene: {transaction[2][3]}</h6></Item>
               </Grid>
             </Grid>
+              </CardContent>
+              
             
-          </Box>
+          </Card>
           
            
           
@@ -224,20 +231,66 @@ function ConsumerHome(props) {
   
     return (
       <div>
-         
+        <br></br> 
+        <br></br>
          <Grid
                 container
                 direction="row"
                 justify="evenly"
-                
                 justifyContent="space-evenly"
                 alignItems="stretch"
                 
-                style={{  width: '100%', gap: 0, padding:0, margin:0 }}
+                style={{  width: '100%', gap: 0, padding:0, margin:0, height: '100%' }}
             >
                 
-                    <Grid item xs={12} sm={3} key={1} padding={0} >
-                    <Box sx={{ margin:1, backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"}, width: 1,  height:500 , borderRadius:5}}>
+                    <Grid item xs={12} sm={3} key={1} padding={0}  >
+                    <Box sx={{ padding: 1, backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"}, width: 1,  height:'80vh' , borderRadius:5}}>
+                   
+                        <div>
+                        {/* <IconButton ><AccountCircleIcon style={{color:"#351E10", fontSize:90}}></AccountCircleIcon> </IconButton> */}
+                        <Typography gutterBottom variant="h5" component="div" style={{color: "#351E10", fontSize: 25, fontWeight:"bold"}}>
+                        My Profile
+                        </Typography>
+                        <Card sx={{ minWidth: 275, backgroundColor:'whitesmoke', margin: 1, textAlign: 'left'}}>
+                          <CardContent>
+                              <AccountCircleIcon />
+                              <CreditCardIcon sx={{ position: 'relative', top: 5}}/> {consumer[0]} <br></br> <br></br>
+                              <BadgeIcon sx={{ position: 'relative', top: 5}}/> {consumer[2]} {consumer[3]} <br></br> <br></br>
+                              <PhoneIcon sx={{ position: 'relative', top: 5}}/> {consumer[4]} <br></br> <br></br>
+                              <HomeIcon sx={{ position: 'relative', top: 5}}/> {consumer[5]} <br></br> <br></br>
+                          </CardContent>
+                        </Card>
+                        
+                        </div>
+                   
+                </Box>
+                    
+                    
+                     </Grid>
+
+                     <Grid item xs={12} sm={5} key={2} >
+                     <Box sx={{  backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"} , borderRadius:5,  height:'80vh'}}>
+                    
+                        <div>
+                        
+                        <Typography gutterBottom variant="h5" component="div" style={{color: "#351E10", fontSize: 25, fontWeight:"bold"}}>
+                        My transactions
+                        <List sx={{ width: '100%', maxHeight: 530, overflowY: 'scroll' }} className="scroll">
+                        {transactionlist}
+    
+                        </List>
+                        <p></p>
+                        </Typography>
+                        
+                        
+                        </div>
+                    
+                </Box>
+                     
+                     </Grid>
+
+                     <Grid item xs={12} sm={3} key={3} >
+                     <Box sx={{ backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"}, width: 1,  height:'80vh' , borderRadius:5}}>
                    
                         <div>
                         {/* <IconButton ><AccountCircleIcon style={{color:"#351E10", fontSize:90}}></AccountCircleIcon> </IconButton> */}
@@ -327,43 +380,6 @@ function ConsumerHome(props) {
                         </div>
                    
                 </Box>
-                    
-                    
-                     </Grid>
-
-                     <Grid item xs={12} sm={5} key={2} >
-                     <Card sx={{  backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"},  height:500 , borderRadius:5}}>
-                    <CardActionArea>
-                        <CardContent>
-                        
-                        <Typography gutterBottom variant="h5" component="div" style={{color: "#351E10", fontSize: 25, fontWeight:"bold"}}>
-                        My transactions
-                        <List sx={{ width: '100%' }}>
-                        {transactionlist}
-    
-                        </List>
-                        <p></p>
-                        </Typography>
-                        
-                        
-                        </CardContent>
-                    </CardActionArea>
-                </Card>
-                     
-                     </Grid>
-
-                     <Grid item xs={12} sm={4} key={3} >
-                     <Card sx={{  backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"},  height:500 , borderRadius:5}}>
-                    <CardActionArea>
-                        <CardContent>
-                       
-                        <Typography gutterBottom variant="h5" component="div" style={{color: "#351E10", fontSize: 25, fontWeight:"bold"}}>
-                        Pending Requests
-                        </Typography>
-                        
-                        </CardContent>
-                    </CardActionArea>
-                </Card>
                      
                      </Grid>
                 

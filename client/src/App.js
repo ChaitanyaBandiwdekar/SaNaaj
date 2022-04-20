@@ -93,8 +93,6 @@ class App extends Component {
     return (
       <div className="App">
         <Header/>
-        <br />
-        <br />
         {/* <h1>Welcome to React Router!</h1> */}
         <Routes>
           <Route path="/" element={<Landing />} />
