@@ -7,26 +7,47 @@ import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Header from '../Header';
 import Footer from '../Footer';
-
+import logo from '../../assets/images/logo.png'
+import AppBar from "@mui/material/AppBar";
+// import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+// import Typography from "@mui/material/Typography";
+// import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { Card, CardActionArea, CardMedia, CardContent, Grid  } from "@mui/material";
 import { useState, useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
 import Sanaaj from "../../contracts/Sanaaj.json";
 import getWeb3 from "../../getWeb3";
+import ConsumerLogin from './ConsumerLogin';
+import { useLocation, useNavigate } from "react-router-dom";
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Divider from '@mui/material/Divider';
+import ListItemText from '@mui/material/ListItemText';
+import { styled } from '@mui/material/styles';
 
 
-function ConsumerHome() {
+
+function ConsumerHome(props) {
     const [web3, setWeb3] = useState(null);
     const [accounts, setAccounts] = useState(null);
     const [contract, setContract] = useState(null);
     const [passErr, setPassErr] = useState(false);
     const [addrErr, setAddrErr] = useState(false);
+    const [allowance, setAllowance] = useState({});
+    const [transactions, setTransactions] = useState({});
+    const [transactionlist, setTransactionlist] = useState([]);
     const theme = createTheme();
+    const location = useLocation();
+    // const state1 = location.state;
+    console.log(location.state.id);
+    
     let navigate = useNavigate();
     // Similar to componentDidMount and componentDidUpdate:
     useEffect(async () => {
@@ -40,6 +61,7 @@ function ConsumerHome() {
       const accounts = await web3.eth.getAccounts();
       console.log(accounts)
       const networkId = await web3.eth.net.getId();
+      console.log(networkId);
   
       const deployedNetwork = Sanaaj.networks[networkId];
       const instance = new web3.eth.Contract(
@@ -51,61 +73,303 @@ function ConsumerHome() {
       setWeb3(web3);
       setAccounts(accounts);
       setContract(instance);
+      console.log(instance);
+      const consumerId=location.state.id
+      // const consumerId=props.consumerId;
+      const allowance1 = await instance.methods.getAllowance(consumerId).call();
+      console.log(allowance1);
+      setAllowance(allowance1);
+      console.log(allowance);
+      const transaction1 = await instance.methods.getTransactions(consumerId).call();
+      console.log(transaction1);
+      setTransactions(transaction1);
+      const formattedTasks = [];
+
+      const tasks = Object.values(transaction1);
+
+
+      console.log(transactions);
+      const Item = styled(Paper)(({ theme }) => ({
+        backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+        ...theme.typography.body2,
+        padding: theme.spacing(1),
+        textAlign: 'left',
+        color: theme.palette.text.secondary,
+      }));
+      const list = transaction1.map((transaction,index) =>
+      // <ListItem alignItems="flex-start"  key={transaction[0]} sx={{ width: '100%', fontSize: 20}}>
+        
+          /* <ListItem>Quantity:
+            <List>
+              <ListItem>Rice: {transaction[2][0]}</ListItem>
+              <ListItem>Wheat: {transaction[2][1]}</ListItem>
+              <ListItem>Sugar: {transaction[2][2]}</ListItem>
+              <ListItem>Kerosene: {transaction[2][3]}</ListItem>
+            </List>
+          </ListItem>
+          <ListItem>Time: {transaction[3]}</ListItem>
+        </List>
+        {transaction}
+    </ListItem> */
+    
+                            /* <ListItemText
+                              primary={<h6> Transaction Number:  {index+1}</h6> }
+                              secondary={
+                                <List>
+              <ListItem>
+                Rice: {transaction[2][0]}</ListItem>
+              <ListItem>Wheat: {transaction[2][1]}</ListItem>
+              <ListItem>Sugar: {transaction[2][2]}</ListItem>
+              <ListItem>Kerosene: {transaction[2][3]}</ListItem>
+              <ListItem>Time: {transaction[3]}</ListItem>
+              <hr></hr>
+            </List>
+            </ListItem> */
+            <Box sx={{ width: '95%', borderColor: 'grey.500', border: 1, padding: 1 , borderRadius: 2}}>
+              <Grid container spacing={1} columns={16}>
+        <Grid item xs={8}>
+          
+            <h6 style={{backgoundColor: "none"}}>Transaction : {index+1}</h6>
+          
+          
+        </Grid>
+        <Grid item xs={8}>
+          
+            <h6> Time: {transaction[3]}</h6>
+          
+         
+        </Grid>
+      </Grid>
+      <h6 >Quantity </h6>
+      <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+              <Grid item xs={6}>
+                <Item><h6>Rice: {transaction[2][0]}</h6></Item>
+              </Grid>
+              <Grid item xs={6}>
+                <Item><h6>Wheat: {transaction[2][1]}</h6></Item>
+              </Grid>
+              <Grid item xs={6}>
+                <Item><h6>Sugar: {transaction[2][2]}</h6></Item>
+              </Grid>
+              <Grid item xs={6}>
+                <Item><h6>Kerosene: {transaction[2][3]}</h6></Item>
+              </Grid>
+            </Grid>
+            
+          </Box>
+           
+          
+                                
+
+                          
+     )
+    setTransactionlist(list)
+
+
+      
+
     });
   
-    const handleSubmit = async (event) => {
-          event.preventDefault();
-          // const { contract, accounts } = this.state;
-          // this.setState({ web3, accounts, contract: instance }, this.runExample);
-          const data = new FormData(event.currentTarget);
-          console.log({
-            ration: data.get('id'),
-            password: data.get('password'),
-          });
-          console.log(typeof(data.get("id")));
-          const vendor = await contract.methods.getVendor(data.get("id")).call();
-          // await contract.methods.updateAllowance(data.get('id'), 1, [1, 1, 0, 1], Date().toLocaleString()).send({from: accounts[0]});
-          // const transactions = await contract.methods.getTransactions(data.get("id")).call();
-          console.log(vendor);
-          // console.log(transactions);
-      
-          console.log(vendor[5]);
-      
-          // let navigate = useNavigate();
-      
-          if(data.get('password') == vendor[5]){
-            setPassErr(false);
-            if(vendor[7] == accounts[0]){
-  
-              setAddrErr(false);
-              // this.navigate('/consumer-home');
-              console.log("GG");
-              navigate('/vendor-home');
-              // this.props.history.push("/login-consumer");
-              // return <Navigate replace={true} to="/consumer-home" />
-              // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
-              // window.location.href='/consumer-home';
-            
-            }
-            else{
-              console.log("Incorrect wallet address");
-              // navigate('/login-consumer');
-              setAddrErr(true);
-              // navigate.push('/login-consumer');
-              // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
-            }
-          }
-          else{
-            console.log("Incorrect password");
-            // navigate('/login-consumer');
-            setPassErr(true);
-            // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
-          }
+    // const handleSubmit = async (event) => {
+    //       event.preventDefault();
+    //       // const { contract, accounts } = this.state;
+    //       // this.setState({ web3, accounts, contract: instance }, this.runExample);
+    //       const data = new FormData(event.currentTarget);
+    //       console.log({
+    //         ration: data.get('id'),
+    //         password: data.get('password'),
+    //       });
+    //       console.log(typeof(data.get("id")));
           
-        };
+    //       // await contract.methods.updateAllowance(data.get('id'), 1, [1, 1, 0, 1], Date().toLocaleString()).send({from: accounts[0]});
+    //       // const transactions = await contract.methods.getTransactions(data.get("id")).call();
+    //       // console.log(vendor);
+    //       // console.log(transactions);
+      
+    //       console.log(vendor[5]);
+      
+    //       // let navigate = useNavigate();
+      
+    //       if(data.get('password') == vendor[5]){
+    //         setPassErr(false);
+    //         if(vendor[7] == accounts[0]){
+  
+    //           setAddrErr(false);
+    //           // this.navigate('/consumer-home');
+    //           console.log("GG");
+    //           navigate('/vendor-home');
+    //           // this.props.history.push("/login-consumer");
+    //           // return <Navigate replace={true} to="/consumer-home" />
+    //           // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
+    //           // window.location.href='/consumer-home';
+            
+    //         }
+    //         else{
+    //           console.log("Incorrect wallet address");
+    //           // navigate('/login-consumer');
+    //           setAddrErr(true);
+    //           // navigate.push('/login-consumer');
+    //           // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
+    //         }
+    //       }
+    //       else{
+    //         console.log("Incorrect password");
+    //         // navigate('/login-consumer');
+    //         setPassErr(true);
+    //         // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
+    //       }
+          
+    //     };
   
     return (
-      <h1>Consumer Home</h1>
+      <div>
+         <Header></Header><br></br>
+         
+         
+         <Grid
+                container
+                direction="row"
+                justify="evenly"
+                
+                justifyContent="space-evenly"
+                alignItems="stretch"
+                
+                style={{  width: '100%' }}
+            >
+                
+                    <Grid item xs={12} sm={6} md={3} key={1}  >
+                    <Box sx={{  backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"},  height:500 , borderRadius:5}}>
+                   
+                        <div>
+                        {/* <IconButton ><AccountCircleIcon style={{color:"#351E10", fontSize:90}}></AccountCircleIcon> </IconButton> */}
+                        <Typography gutterBottom variant="h5" component="div" style={{color: "#351E10", fontSize: 25, fontWeight:"bold"}}>
+                        Allowance
+                        
+
+                        </Typography>
+                        <List sx={{ width: '100%'}}>
+                          <ListItem alignItems="flex-start">
+                            <ListItemText
+                              primary="Rice"
+                              secondary={
+                                <React.Fragment>
+                                  <Typography
+                                    sx={{ display: 'inline' }}
+                                    component="span"
+                                    variant="body2"
+                                    color="text.primary"
+                                  >
+                                    Quantity: {allowance[0]}
+                                  </Typography>
+                                </React.Fragment>
+                              }
+                            />
+                          </ListItem>
+                          <hr></hr>
+                          {/* <Divider variant="inset" component="li" /> */}
+                          <ListItem alignItems="flex-start">
+                            <ListItemText
+                              primary="Wheat"
+                              secondary={
+                                <React.Fragment>
+                                  <Typography
+                                    sx={{ display: 'inline' }}
+                                    component="span"
+                                    variant="body2"
+                                    color="text.primary"
+                                  >
+                                    Quantity: {allowance[1]}
+                                  </Typography>
+                                </React.Fragment>
+                              }
+                            />
+                          </ListItem>
+                          <hr></hr>
+                          
+                          <ListItem alignItems="flex-start">
+                            <ListItemText
+                              primary="Sugar"
+                              secondary={
+                                <React.Fragment>
+                                  <Typography
+                                    sx={{ display: 'inline' }}
+                                    component="span"
+                                    variant="body2"
+                                    color="text.primary"
+                                  >
+                                    Quantity: {allowance[2]}
+                                  </Typography>
+                                </React.Fragment>
+                              }
+                            />
+                          </ListItem>
+                          <hr></hr>
+                          
+                          <ListItem alignItems="flex-start">
+                            <ListItemText
+                              primary="Kerosene"
+                              secondary={
+                                <React.Fragment>
+                                  <Typography
+                                    sx={{ display: 'inline' }}
+                                    component="span"
+                                    variant="body2"
+                                    color="text.primary"
+                                  >
+                                    Quantity: {allowance[3]}
+                                  </Typography>
+                                </React.Fragment>
+                              }
+                            />
+                          </ListItem>
+                          <hr></hr>
+                        </List>
+                        
+                        </div>
+                   
+                </Box>
+                    
+                    
+                     </Grid>
+
+                     <Grid item xs={12} sm={6} md={3} key={2} >
+                     <Card sx={{  backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"},  height:500 , borderRadius:5}}>
+                    <CardActionArea>
+                        <CardContent>
+                        
+                        <Typography gutterBottom variant="h5" component="div" style={{color: "#351E10", fontSize: 25, fontWeight:"bold"}}>
+                        My transactions
+                        <List  sx={{ width: '100%'}}>
+                        {transactionlist[0]}
+
+                        </List>
+                        <p></p>
+                        </Typography>
+                        
+                        
+                        </CardContent>
+                    </CardActionArea>
+                </Card>
+                     
+                     </Grid>
+
+                     <Grid item xs={12} sm={6} md={3} key={3} >
+                     <Card sx={{  backgroundColor:'#FFF7E7', "&:hover":{backgroundColor: "white"},  height:500 , borderRadius:5}}>
+                    <CardActionArea>
+                        <CardContent>
+                       
+                        <Typography gutterBottom variant="h5" component="div" style={{color: "#351E10", fontSize: 25, fontWeight:"bold"}}>
+                        Pending Requests
+                        </Typography>
+                        
+                        </CardContent>
+                    </CardActionArea>
+                </Card>
+                     
+                     </Grid>
+                
+            </Grid>
+      </div>
     );
   }
   

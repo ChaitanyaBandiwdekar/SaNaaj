@@ -59,7 +59,7 @@ contract Sanaaj {
             "Mumbai",
             1,
             "Hello123",
-            0x9345BaF04A62F6A91d20aa08121a16eB39308b70
+            0xD905f36ceDFfC58c3B16A3Dd0759Ef8cd3DCea8a
         );
         consumerList["MH1234509876"] = AssetLibrary.Consumer(
             "MH1234509876",
@@ -280,4 +280,5 @@ contract Sanaaj {
     function updateCardType(string memory _ration, uint256 card_type) public {
         consumerList[_ration].ration_card_type = card_type;
     }
+    
 }

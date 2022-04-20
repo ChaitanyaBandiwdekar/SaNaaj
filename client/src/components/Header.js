@@ -28,6 +28,7 @@ class Header extends Component{
             component="div" sx={{ flexGrow: 1 }} style={{color: "#DDAA00", fontSize: 25}}>
             SaNaaj - Samaaj Ka Anaaj
           </Typography>
+          {/* <Button color="inherit" height="20"><img src={logo} height="50"></img></Button> */}
           
         </Toolbar>
       </AppBar>
