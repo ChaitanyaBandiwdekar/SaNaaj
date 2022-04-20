@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ReactDOM from 'react-dom';
+import { useState, useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,42 +11,44 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useLocation } from 'react-router-dom'
 import Header from '../Header';
 import Footer from '../Footer';
-import { red } from '@mui/material/colors';
 import Sanaaj from "../../contracts/Sanaaj.json";
 import getWeb3 from "../../getWeb3";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 
-// function Copyright(props) {
-//   return (
-//     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-//       {'Copyright © '}
-//       <Link color="inherit" href="https://mui.com/">
-//         Your Website
-//       </Link>{' '}
-//       {new Date().getFullYear()}
-//       {'.'}
-//     </Typography>
-//   );
-// }
 
 const theme = createTheme();
 
 
-class AuthorityLogin extends React.Component {
+function AuthorityLogin() {
+  const [web3, setWeb3] = useState(null);
+  const [accounts, setAccounts] = useState(null);
+  const [contract, setContract] = useState(null);
+  const [passErr, setPassErr] = useState(false);
+  const [addrErr, setAddrErr] = useState(false);
+  const [idErr, setIdErr] = useState(false);
+  const [number, setNumber] = useState("");
+  const [body, setBody] = useState("");
+  let navigate = useNavigate();
+  const location = useLocation();
+  let state1 = location.state;
 
-  state = { web3: null, 
-    accounts: null, 
-    contract: null,
-    state1: null
-  };
-  
-  componentDidMount = async () => {
+  // Similar to componentDidMount and componentDidUpdate:
+
+  useEffect(async () => {
+    const reloadCount = sessionStorage.getItem('reloadCount');
+    if(reloadCount < 2) {
+      sessionStorage.setItem('reloadCount', String(reloadCount + 1));
+      window.location.reload();
+    } else {
+      sessionStorage.removeItem('reloadCount');
+    }
 
     console.log('hello');
-    console.log('hello1')
+    console.log('hello1');
 
     const web3 = await getWeb3();
     console.log(web3)
@@ -62,39 +64,46 @@ class AuthorityLogin extends React.Component {
       deployedNetwork && deployedNetwork.address,
     );
     console.log('Instance found');
-    this.setState({ web3, accounts, contract: instance });
-  }
+    // setState({ web3, accounts, contract: instance });
+    setWeb3(web3);
+    setAccounts(accounts);
+    setContract(instance);
+  }, []);
 
-  handleSubmit = async (event) => {
-    event.preventDefault();
-    // this.setState({ web3, accounts, contract: instance }, this.runExample);
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('id'),
-      password: data.get('password'),
-    });
-    // const consumer = await instance.methods.getConsumer(data.get("id")).call();
-    // console.log(consumer)
-    // } catch (error) {
-    //   // Catch any errors for any of the above operations.
-    //   alert(
-    //     `Failed to load web3, accounts, or contract. Check console for details.`,
-    //   );
-    //   console.error(error);
-    // }
-    
-    
-  };
+  const handleSubmit = async (event) => {
+        event.preventDefault();
+        // const { contract, accounts } = this.state;
+        // this.setState({ web3, accounts, contract: instance }, this.runExample);
+        const data = new FormData(event.currentTarget);
+        console.log({
+          
+          password: data.get('password'),
+        });
+        if(data.get('password') == "admin1234"){
+          
+            navigate('/authority-home');
+            // this.props.history.push("/login-consumer");
+            // return <Navigate replace={true} to="/consumer-home" />
+            // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
+            // window.location.href='/consumer-home';
+          
+         
+        }
+      }
 
-  
-  
-  render(){ 
-    return (
+          
+        // await contract.methods.updateAllowance(data.get('id'), 1, [1, 1, 0, 1], Date().toLocaleString()).send({from: accounts[0]});
+        // const transactions = await contract.methods.getTransactions(data.get("id")).call();
+        
+        
+      
+
+  return (
     <ThemeProvider theme={theme}>
-      <Header/>
+      
       <Grid container component="main" sx={{ height: '90vh' }}>
         <CssBaseline />
-        <Grid
+         <Grid
           item
           xs={false}
           sm={4}
@@ -122,9 +131,20 @@ class AuthorityLogin extends React.Component {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5" sx={{color:"#351E10", fontWeight:"bold"}}>
-              Admin Login
+              Authority Login
             </Typography>
-            <Box component="form" noValidate onSubmit={this.handleSubmit} sx={{ mt: 1 }}>
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+              
+              {/* <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="ration"
+                label="Ration Card ID"
+                name="id"
+                autoFocus
+              /> */}
+     
               <TextField
                 margin="normal"
                 required
@@ -136,7 +156,11 @@ class AuthorityLogin extends React.Component {
                 autoComplete="current-password"
                 
               />
+
               
+              {passErr? <div style={{color:"red"}}>Incorrect password</div> : <div></div>}
+              
+
               <Button
                 type="submit"
                 fullWidth
@@ -154,7 +178,6 @@ class AuthorityLogin extends React.Component {
       
     </ThemeProvider>
   );
-}
 }
 
 export default AuthorityLogin;

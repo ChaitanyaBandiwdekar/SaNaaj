@@ -36,6 +36,14 @@ import BadgeIcon from '@mui/icons-material/Badge';
 import PhoneIcon from '@mui/icons-material/Phone';
 import HomeIcon from '@mui/icons-material/Home';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import Modal from '@mui/material/Modal';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import GradingIcon from '@mui/icons-material/Grading';
+import GrainIcon from '@mui/icons-material/Grain';
+import SanitizerIcon from '@mui/icons-material/Sanitizer';
+import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
+import GrassIcon from '@mui/icons-material/Grass';
 
 function ConsumerHome(props) {
     const [web3, setWeb3] = useState(null);
@@ -47,8 +55,48 @@ function ConsumerHome(props) {
     const [transactions, setTransactions] = useState({});
     const [transactionlist, setTransactionlist] = useState([]);
     const [consumer, setConsumer] = useState([]);
+    const [color, setColor] = useState("black");
+    const [colorname, setColorname] = useState("black");
+    const [complaint,setComplaint]=useState("")
     const theme = createTheme();
     const location = useLocation();
+    const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    console.log({
+      email: data.get('email'),
+      password: data.get('password'),
+      
+    });
+  };
+
+  const handleComplain= async (event)=>{
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const complaint1=data.get('complaint');
+    console.log(contract);
+    await contract.methods.addComplaint(consumer[0],consumer[6],complaint1,Date().toLocaleString()).send({from: accounts[0]})
+    alert("Your complaint is submitted.");
+    console.log('We here');
+    
+    
+  }
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+
+  };
     // const state1 = location.state;
     console.log(location.state.id);
     
@@ -90,10 +138,7 @@ function ConsumerHome(props) {
       const transaction1 = await instance.methods.getTransactions(consumerId).call();
       console.log(transaction1);
       setTransactions(transaction1);
-      const formattedTasks = [];
-
-      const tasks = Object.values(transaction1);
-
+      
 
       console.log(transactions);
       const Item = styled(Paper)(({ theme }) => ({
@@ -103,6 +148,26 @@ function ConsumerHome(props) {
         textAlign: 'left',
         color: theme.palette.text.secondary,
       }));
+      const cardtype= consumer1[1];
+      console.log(consumer1[1])
+      const c=setColor("blue");
+      console.log(c);
+      if (cardtype==1) {
+        setColor("orange");
+        setColorname("saffron")
+        
+      } 
+      else if(cardtype==2) {
+        setColor("white");
+        setColorname("white");
+      }
+      else{
+        setColor("yellow");
+        setColorname("yellow");
+       
+      }
+      
+      
       const list = transaction1.map((transaction,index) =>
       // <ListItem alignItems="flex-start"  key={transaction[0]} sx={{ width: '100%', fontSize: 20}}>
         
@@ -266,6 +331,84 @@ function ConsumerHome(props) {
                         </Card>
                         
                         </div>
+                        
+                        <div>
+                          
+                          <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:color }} style={{color:"white", backgroundColor:color, borderColor:"#351E10"}} fullWidth>Ration Card Type: {colorname}</Button>
+                          <br></br><br></br>
+      <Button  onClick={handleOpen} style={{backgroundColor:"#351E10", color: "#DDAA00",}} fullWidth>File a Complain</Button>
+      
+      <Modal
+      backgroundColor="#000000"
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        
+      >
+        {/* <Box sx={style}> */}
+          {/* <Typography id="modal-modal-title" variant="h6" component="h2">
+            File Your Complain
+          </Typography> */}
+          <Box
+          sx={
+            // marginTop: 8,
+            // display: 'flex',
+            // flexDirection: 'column',
+            // alignItems: 'center',
+            style
+          }
+        >
+          {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <LockOutlinedIcon />
+          </Avatar> */}
+          
+          <Box component="form" onSubmit={handleComplain} noValidate sx={{ mt: 1 }}>
+            <Typography>File Your Complain Now!</Typography>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="complaint"
+              label="Your Complain"
+              name="complaint"
+              onChange={setComplaint}
+              autoFocus
+            />
+            {/* <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+            /> */}
+            
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              
+              sx={{ mt: 3, mb: 2 , backgroundColor: "#DDAA00", "&:hover":{backgroundColor:'#DDAA00'}, color:"#351E10", fontWeight:"bold"}}
+              
+            >
+              submit
+            </Button>
+            <Grid container>
+              <Grid item xs>
+                
+              </Grid>
+              <Grid item>
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+          
+        {/* </Box> */}
+      </Modal>
+    </div>
                    
                 </Box>
                     
@@ -300,12 +443,12 @@ function ConsumerHome(props) {
                         <div>
                         <Card sx={{ minWidth: 275, backgroundColor:'whitesmoke', "&:hover":{backgroundColor: "white"},margin: 1, textAlign: 'left',borderRadius:2}}>
                           <CardContent>
-                            <p style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10", fontSize: 20, fontWeight:"bold"}}> <AccountCircleIcon style={{fontSize:30, }}></AccountCircleIcon>My Allowance</p>
+                            <p style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10", fontSize: 20, fontWeight:"bold"}}> <GradingIcon style={{fontSize:30, }}></GradingIcon>My Allowance</p>
                               <br></br><hr></hr><br></br>
-                              <BadgeIcon sx={{ position: 'relative', top: 5}}/>  Rice: {allowance[0]} <br></br> <br></br>
-                              <CreditCardIcon sx={{ position: 'relative', top: 5}}/>Wheat: {allowance[1]} <br></br> <br></br>
-                              <PhoneIcon sx={{ position: 'relative', top: 5}}/>  Sugar: {allowance[2]} <br></br> <br></br>
-                              <HomeIcon sx={{ position: 'relative', top: 5}}/> Kerosene:  {allowance[3]}<br></br> <br></br>
+                              <GrainIcon sx={{ position: 'relative', top: 5}}/>  Rice: {allowance[0]} <br></br> <br></br>
+                              <GrassIcon sx={{ position: 'relative', top: 5}}/>Wheat: {allowance[1]} <br></br> <br></br>
+                              <HourglassBottomIcon sx={{ position: 'relative', top: 5}}/>  Sugar: {allowance[2]} <br></br> <br></br>
+                              <SanitizerIcon sx={{ position: 'relative', top: 5}}/> Kerosene:  {allowance[3]}<br></br> <br></br>
                               </CardContent>
                               </Card>
                         {/* <IconButton ><AccountCircleIcon style={{color:"#351E10", fontSize:90}}></AccountCircleIcon> </IconButton> */}
