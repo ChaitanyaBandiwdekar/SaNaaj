@@ -14,7 +14,11 @@ body{
 .App-logo {
   height: 40vmin;
 }
-
+.profile{
+  position: fixed;
+  top:0;
+  left: 0
+}
 
 .App-header {
   background-color: #282c34;

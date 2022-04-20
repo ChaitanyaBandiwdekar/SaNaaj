@@ -250,7 +250,9 @@ function ConsumerLogin() {
           password: data.get('password'),
         });
         
-          const consumer = await contract.methods.getConsumer(data.get("id")).call();
+          const consumer = await contract.methods.getConsumer(data.get("id")).call();          
+          const consumerId = data.get("id");
+          console.log(consumerId);
 
           if(consumer[0] == ""){
             setIdErr(true);
@@ -271,7 +273,7 @@ function ConsumerLogin() {
             setAddrErr(false);
             // this.navigate('/consumer-home');
             console.log("GG");
-            navigate('/consumer-home');
+            navigate('/consumer-home', {state:{id:consumerId}});
             // this.props.history.push("/login-consumer");
             // return <Navigate replace={true} to="/consumer-home" />
             // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />

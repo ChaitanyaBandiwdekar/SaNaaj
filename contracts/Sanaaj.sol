@@ -59,7 +59,7 @@ contract Sanaaj {
             "Mumbai",
             1,
             "Hello123",
-            0x9345BaF04A62F6A91d20aa08121a16eB39308b70
+            0xD905f36ceDFfC58c3B16A3Dd0759Ef8cd3DCea8a
         );
         consumerList["MH1234509876"] = AssetLibrary.Consumer(
             "MH1234509876",
@@ -282,17 +282,17 @@ contract Sanaaj {
     }
 
     function addConsumer(
-        string ration_card,
+        string memory ration_card,
         uint256 ration_card_type,
-        string first_name,
-        string last_name,
-        string phone,
-        string location,
+        string memory first_name,
+        string memory last_name,
+        string memory phone,
+        string memory location,
         uint256 vendor_id,
-        string password,
+        string memory password,
         address wallet_addr
     ) public {
-        AssetLibrary.Consumer consumer = new AssetLibrary.Consumer(
+        AssetLibrary.Consumer memory consumer = AssetLibrary.Consumer(
             ration_card,
             ration_card_type,
             first_name,
@@ -309,15 +309,15 @@ contract Sanaaj {
 
     function addVendor(
         uint256 vendor_id,
-        string first_name,
-        string last_name,
-        string phone,
-        string location,
-        string password,
+        string memory first_name,
+        string memory last_name,
+        string memory phone,
+        string memory location,
+        string memory password,
         bool isBlacklisted,
         address wallet_addr
     ) public {
-        AssetLibrary.Vendor vendor = AssetLibrary.Vendor(
+        AssetLibrary.Vendor memory vendor = AssetLibrary.Vendor(
             vendor_id,
             first_name,
             last_name,
