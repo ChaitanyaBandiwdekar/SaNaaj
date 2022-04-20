@@ -70,8 +70,8 @@ contract Sanaaj {
             "Hello123",
             0xFc43ee9441590F044136fC8B225483188a11de92
         );
-        consumerList["MH1234509876"] = AssetLibrary.Consumer(
-            "MH1234509876",
+        consumerList["MH1234509666"] = AssetLibrary.Consumer(
+            "MH1234509666",
             2,
             "Shyam",
             "Ghorpade",
@@ -139,13 +139,17 @@ contract Sanaaj {
         adminPassword = "admin1234";
         rationCardList = [
             "MH1234567890",
-            "MH1234509876",
+            "MH1234509666",
             "MH1234509876",
             "MH9876541230",
             "MH9876504321"
         ];
         vendorIDList = [1, 2];
         adminAddress = 0x1964F1519FF7ACAa5E6b2462070cB0d6817FbA4E;
+    }
+
+    function getAdminPassword()public view returns(string memory){
+        return adminPassword;
     }
 
     function getConsumer(string memory _ration)
