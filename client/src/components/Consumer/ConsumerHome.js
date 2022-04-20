@@ -138,7 +138,7 @@ function ConsumerHome(props) {
         <Grid item xs={8}>
           
             <h6 style={{backgoundColor: "none"}}>Transaction : {index+1}</h6>
-          
+                              
           
         </Grid>
         <Grid item xs={8} fontSize={15}>
