@@ -44,6 +44,8 @@ import GrassIcon from '@mui/icons-material/Grass';
 import GradingIcon from '@mui/icons-material/Grading';
 import PeopleIcon from '@mui/icons-material/People';
 import Modal from '@mui/material/Modal';
+import BlockUi from 'react-block-ui';
+import 'react-block-ui/style.css';
 
 function VendorHome(props) {
     const [web3, setWeb3] = useState(null);
@@ -53,6 +55,7 @@ function VendorHome(props) {
     const [passErr, setPassErr] = useState(false);
     const [addrErr, setAddrErr] = useState(false);
     const [stock, setStock] = useState({});
+    // const [isBlacklisted, setIsblacklisted] =useState(null);
     const [transactions, setTransactions] = useState({});
     const [consumerlist, setConsumerlist] = useState([]);
     const [vendor, setVendor] = useState([]);
@@ -163,6 +166,8 @@ function VendorHome(props) {
       let allconsumers = await instance.methods.getAllConsumers().call();
       console.log(allconsumers);
       let list = []
+      // setIsblacklisted(vendor1[6]);
+      // console.log(vendor1[6]);
       
       // allconsumers=allconsumers.filter(async (consumer)=>{
       //   let c = await instance.methods.getConsumer(consumer).call();
@@ -171,8 +176,6 @@ function VendorHome(props) {
 
       allconsumers.forEach( async (element) => {
         let c = await instance.methods.getConsumer(element).call();
-        console.log(typeof c[6]);
-        console.log(c[6]===vendorId);
         if(c[6]===vendorId){
           await list.push(c);
         }
@@ -243,6 +246,7 @@ function VendorHome(props) {
   
     return (
       <div>
+        <BlockUi tag="div" backgroundColor="black" blocking={vendor[6]} message="This account has been blacklisted. Contact authority@sanaaj.com for further information." color="black">
         <br></br> 
         <br></br>
          <Grid
@@ -521,6 +525,7 @@ function VendorHome(props) {
                      </Grid>
                 
             </Grid>
+            </BlockUi>
       </div>
     );
   }

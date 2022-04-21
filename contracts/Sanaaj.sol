@@ -67,8 +67,8 @@ contract Sanaaj {
             "1234567890",
             "Mumbai",
             1,
-            "Hello123",
-            0xD905f36ceDFfC58c3B16A3Dd0759Ef8cd3DCea8a
+            "0x134563d4e440f0e418b0f382f23a2cf301af6d7f648ccfae9895018345d779a3", //"Hello123"
+            0x9345BaF04A62F6A91d20aa08121a16eB39308b70
         );
         consumerList["MH1234509666"] = AssetLibrary.Consumer(
             "MH1234509666",
@@ -78,7 +78,7 @@ contract Sanaaj {
             "1234509876",
             "Mumbai",
             1,
-            "Hello1234",
+            "0x75ca1baec3f3382989affc4cadb0cc93f47e946b247e3a655c6b36d43e64dd2a", //"Hello1234"
             0xB793c1d9c9D5050859864DbD321Fc873e7942e54
         );
         consumerList["MH1234509876"] = AssetLibrary.Consumer(
@@ -89,7 +89,7 @@ contract Sanaaj {
             "1234509876",
             "Mumbai",
             1,
-            "Hello1235",
+            "0xbaa0487be7b20f0a7c20804a38771626ec1b04476a9ac7d7b55ba1b80bc2ad2f", //"Hello1235"
             0xb7C6562BF283534A775d5198195bfD8d47D22647
         );
         consumerList["MH9876541230"] = AssetLibrary.Consumer(
@@ -100,7 +100,7 @@ contract Sanaaj {
             "9876541230",
             "Mumbai",
             2,
-            "Hello1236",
+            "0xa9df37c2d65ced953698bab7a72d9a31b4e7e25e2de561d1d127a8b06b6d70f3", //"Hello1236"
             0xb6444A785Bc6d27d3fAcb648dc0714C39F569B24
         );
         consumerList["MH9876504321"] = AssetLibrary.Consumer(
@@ -111,7 +111,7 @@ contract Sanaaj {
             "9876504321",
             "Mumbai",
             2,
-            "Hello1237",
+            "facd7b3ff9742230f7202864686d424250d70957bd99d8475236f76d1a9e788b", //"Hello1237"
             0x97b814cdcD7F542f413E2CFef8AF97c6633ffF3D
         );
 
@@ -121,7 +121,7 @@ contract Sanaaj {
             "Bagwe",
             "1029384756",
             "Mumbai",
-            "hello987",
+            "0x9f66dc74cb77e162097a36ddc845799b69f7d721e4146b7f69c873ed9c96697e", //"hello987"
             false,
             0x81472D49E156dfbe98c2d3B311fb0512756Fe155
         );
@@ -131,12 +131,12 @@ contract Sanaaj {
             "Kaulgud",
             "9087564132",
             "Mumbai",
-            "hello9876",
+            "15af607aded488ed5fd6d94c14cc4412bd58245f064ce8da28b486857eecf607", //"hello9876"
             false,
             0x295b6AE0Efe05de0011E9316E27B560cCdCD3DDb
         );
 
-        adminPassword = "admin1234";
+        adminPassword = "0xac9689e2272427085e35b9d3e3e8bed88cb3434828b43b86fc0596cad4c6e270"; //"admin1234";
         rationCardList = [
             "MH1234567890",
             "MH1234509666",
@@ -148,7 +148,7 @@ contract Sanaaj {
         adminAddress = 0x1964F1519FF7ACAa5E6b2462070cB0d6817FbA4E;
     }
 
-    function getAdminPassword()public view returns(string memory){
+    function getAdminPassword() public view returns (string memory) {
         return adminPassword;
     }
 
@@ -305,6 +305,7 @@ contract Sanaaj {
         string memory password,
         address wallet_addr
     ) public {
+        // require(sha256(abi.encodePacked()) == sha256(abi.encodePacked()));
         AssetLibrary.Consumer memory consumer = AssetLibrary.Consumer(
             ration_card,
             ration_card_type,
@@ -313,7 +314,7 @@ contract Sanaaj {
             phone,
             location,
             vendor_id,
-            password,
+            toHex(sha256(abi.encodePacked(password))),
             wallet_addr
         );
 
@@ -337,7 +338,7 @@ contract Sanaaj {
             last_name,
             phone,
             location,
-            password,
+            toHex(sha256(abi.encodePacked(password))),
             isBlacklisted,
             wallet_addr
         );
@@ -368,5 +369,113 @@ contract Sanaaj {
         returns (AssetLibrary.Complaint[] memory)
     {
         return complaintList;
+    }
+
+    function resetConsumerPassword(
+        string memory ration_id,
+        string memory new_password
+    ) public {
+        string memory password1 = toHex(sha256(abi.encodePacked(new_password)));
+        consumerList[ration_id].password = password1;
+    }
+
+    function resetVendorPassword(uint256 vendor_id, string memory new_password)
+        public
+    {
+        string memory password1 = toHex(sha256(abi.encodePacked(new_password)));
+        vendorList[vendor_id].password = password1;
+    }
+
+    function checkConsumerCredentials(
+        string memory ration_id,
+        string memory password
+    ) public view returns (bool) {
+        AssetLibrary.Consumer memory consumer = consumerList[ration_id];
+
+        string memory hashed_password = toHex(
+            sha256(abi.encodePacked(password))
+        );
+        return (keccak256(abi.encodePacked((hashed_password))) ==
+            keccak256(abi.encodePacked((consumer.password))));
+    }
+
+    function checkVendorCredentials(uint256 vendor_id, string memory password)
+        public
+        view
+        returns (bool)
+    {
+        AssetLibrary.Vendor memory vendor = vendorList[vendor_id];
+
+        string memory hashed_password = toHex(
+            sha256(abi.encodePacked(password))
+        );
+        return (keccak256(abi.encodePacked((hashed_password))) ==
+            keccak256(abi.encodePacked((vendor.password))));
+    }
+
+    function checkAdminCredentials(string memory password)
+        public
+        view
+        returns (bool)
+    {
+        string memory hashed_password = toHex(
+            sha256(abi.encodePacked(password))
+        );
+        return (keccak256(abi.encodePacked((hashed_password))) ==
+            keccak256(abi.encodePacked((adminPassword))));
+    }
+
+    function toHex(bytes32 data) public pure returns (string memory) {
+        return
+            string(
+                abi.encodePacked(
+                    "0x",
+                    toHex16(bytes16(data)),
+                    toHex16(bytes16(data << 128))
+                )
+            );
+    }
+
+    function toHex16(bytes16 data) internal pure returns (bytes32 result) {
+        result =
+            (bytes32(data) &
+                0xFFFFFFFFFFFFFFFF000000000000000000000000000000000000000000000000) |
+            ((bytes32(data) &
+                0x0000000000000000FFFFFFFFFFFFFFFF00000000000000000000000000000000) >>
+                64);
+        result =
+            (result &
+                0xFFFFFFFF000000000000000000000000FFFFFFFF000000000000000000000000) |
+            ((result &
+                0x00000000FFFFFFFF000000000000000000000000FFFFFFFF0000000000000000) >>
+                32);
+        result =
+            (result &
+                0xFFFF000000000000FFFF000000000000FFFF000000000000FFFF000000000000) |
+            ((result &
+                0x0000FFFF000000000000FFFF000000000000FFFF000000000000FFFF00000000) >>
+                16);
+        result =
+            (result &
+                0xFF000000FF000000FF000000FF000000FF000000FF000000FF000000FF000000) |
+            ((result &
+                0x00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000) >>
+                8);
+        result =
+            ((result &
+                0xF000F000F000F000F000F000F000F000F000F000F000F000F000F000F000F000) >>
+                4) |
+            ((result &
+                0x0F000F000F000F000F000F000F000F000F000F000F000F000F000F000F000F00) >>
+                8);
+        result = bytes32(
+            0x3030303030303030303030303030303030303030303030303030303030303030 +
+                uint256(result) +
+                (((uint256(result) +
+                    0x0606060606060606060606060606060606060606060606060606060606060606) >>
+                    4) &
+                    0x0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F) *
+                39
+        );
     }
 }

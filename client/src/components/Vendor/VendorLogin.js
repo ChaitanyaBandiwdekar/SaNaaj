@@ -73,6 +73,8 @@ function VendorLogin() {
           password: data.get('password'),
         });
         console.log(typeof(data.get("id")));
+
+        const password_error = await contract.methods.checkVendorCredentials(data.get('id'), data.get('password'));
         const vendor = await contract.methods.getVendor(data.get("id")).call();
         const vendorId = data.get("id");
           console.log(vendorId);
@@ -91,7 +93,7 @@ function VendorLogin() {
     
         // let navigate = useNavigate();
     
-        if(data.get('password') == vendor[5]){
+        if(password_error){
           setPassErr(false);
           if(vendor[7] == accounts[0]){
 
