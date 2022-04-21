@@ -68,7 +68,7 @@ contract Sanaaj {
             "Mumbai",
             1,
             "Hello123",
-            0xFc43ee9441590F044136fC8B225483188a11de92
+            0xD905f36ceDFfC58c3B16A3Dd0759Ef8cd3DCea8a
         );
         consumerList["MH1234509666"] = AssetLibrary.Consumer(
             "MH1234509666",
@@ -123,7 +123,7 @@ contract Sanaaj {
             "Mumbai",
             "hello987",
             false,
-            0xbC7B67cB47ba61DE49cc9c3774E98D9C5EDF0eB8
+            0x81472D49E156dfbe98c2d3B311fb0512756Fe155
         );
         vendorList[2] = AssetLibrary.Vendor(
             2,
@@ -318,6 +318,7 @@ contract Sanaaj {
         );
 
         consumerList[ration_card] = consumer;
+        rationCardList.push(ration_card);
     }
 
     function addVendor(
@@ -342,6 +343,7 @@ contract Sanaaj {
         );
 
         vendorList[vendor_id] = vendor;
+        vendorIDList.push(vendor_id);
     }
 
     function addComplaint(
