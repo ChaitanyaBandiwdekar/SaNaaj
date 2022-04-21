@@ -75,19 +75,9 @@ function AuthorityLogin() {
         // const { contract, accounts } = this.state;
         // this.setState({ web3, accounts, contract: instance }, this.runExample);
         const data = new FormData(event.currentTarget);
-        console.log({
-          
-          password: data.get('password'),
-        });
-        if(data.get('password') == "admin1234"){
-          
+        const adminPassword = await contract.methods.getAdminPassword().call();
+        if(data.get('password') == adminPassword){
             navigate('/authority-home');
-            // this.props.history.push("/login-consumer");
-            // return <Navigate replace={true} to="/consumer-home" />
-            // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
-            // window.location.href='/consumer-home';
-          
-         
         }
       }
 
