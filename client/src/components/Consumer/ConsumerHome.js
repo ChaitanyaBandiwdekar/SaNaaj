@@ -95,7 +95,6 @@ function ConsumerHome(props) {
     border: '2px solid #000',
     boxShadow: 24,
     p: 4,
-
   };
     // const state1 = location.state;
     console.log(location.state.id);
@@ -237,10 +236,6 @@ function ConsumerHome(props) {
                           
      )
     setTransactionlist(list)
-
-
-      
-
     });
   
     // const handleSubmit = async (event) => {
