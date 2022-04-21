@@ -237,10 +237,6 @@ function ConsumerHome(props) {
                           
      )
     setTransactionlist(list)
-
-
-      
-
     });
   
     // const handleSubmit = async (event) => {

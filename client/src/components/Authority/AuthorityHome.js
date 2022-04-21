@@ -147,7 +147,7 @@ function AuthorityHome() {
 
      setConsumerList(list1);
      setVendorList(list2);
-    }, 500);
+    }, 1000);
   }, []);
 
   // const toggleBlacklist = async function (vendor) {
