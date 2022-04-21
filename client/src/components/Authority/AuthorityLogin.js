@@ -75,8 +75,10 @@ function AuthorityLogin() {
         // const { contract, accounts } = this.state;
         // this.setState({ web3, accounts, contract: instance }, this.runExample);
         const data = new FormData(event.currentTarget);
+        const password_error = await contract.methods.checkAdminCredentials(data.get('password'));
+          
         const adminPassword = await contract.methods.getAdminPassword().call();
-        if(data.get('password') == adminPassword){
+        if(password_error){
             navigate('/authority-home');
         }
       }

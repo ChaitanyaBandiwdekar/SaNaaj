@@ -249,7 +249,7 @@ function ConsumerLogin() {
           ration: data.get('id'),
           password: data.get('password'),
         });
-        
+          const password_error = await contract.methods.checkConsumerCredentials(data.get('id'), data.get('password'));
           const consumer = await contract.methods.getConsumer(data.get("id")).call();          
           const consumerId = data.get("id");
           console.log(consumerId);
@@ -266,7 +266,7 @@ function ConsumerLogin() {
     
         // let navigate = useNavigate();
     
-        if(data.get('password') == consumer[7]){
+        if(password_error){
           setPassErr(false);
           if(consumer[8] == accounts[0]){
 
