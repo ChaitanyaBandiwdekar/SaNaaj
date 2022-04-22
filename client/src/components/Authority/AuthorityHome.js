@@ -44,6 +44,7 @@ function AuthorityHome() {
   const [complaitList,setComplaitList]=useState([])
   const[allcomplaintslist,setallcomplaintslist]=useState([]);
 
+
   function getColor(cardType){
     if(cardType==='0'){
       return "Saffron";
@@ -58,12 +59,21 @@ function AuthorityHome() {
   const [open1, setOpen1] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
   const [open3, setOpen3] = React.useState(false);
+  const [open4, setOpen4] = React.useState(false);
+  const [open5, setOpen5] = React.useState(false);
+  const [open6, setOpen6] = React.useState(false);
   const handleOpen1 = () => setOpen1(true);
   const handleOpen2 = () => setOpen2(true);
   const handleOpen3 = () => setOpen3(true);
+  const handleOpen4 = () => setOpen4(true);
+  const handleOpen5 = () => setOpen5(true);
+  const handleOpen6 = () => setOpen6(true);
   const handleClose1 = () => setOpen1(false);
   const handleClose2 = () => setOpen2(false);
   const handleClose3 = () => setOpen3(false);
+  const handleClose4 = () => setOpen4(false);
+  const handleClose5 = () => setOpen5(false);
+  const handleClose6 = () => setOpen6(false);
   const handleAddConsumer= async (event)=>{
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -116,9 +126,35 @@ function AuthorityHome() {
       isBlacklisted,
       wallet_addr).send({from: accounts[0]})
     alert("New Vendor is added");
-    console.log('We here');
     
     
+    
+  }
+  const handleRefillStock=async (event)=>{
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const vendor_id=parseInt(event.target.vid.value);
+    await contract.methods.refillStock(vendor_id).send({from: accounts[0]})
+    console.log('success')
+    alert('Stock updated successfully for vendor!')
+  }
+  const refillAllowance=async(event)=>{
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const c_id=event.target.cid.value;
+    await contract.methods.refillAllowance(c_id).send({from: accounts[0]});
+    console.log('success');
+    alert('Allowance updated successfully for consumers!');
+
+  }
+  const handleBlackList=async(event)=>{
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const v_id=parseInt(event.target.vId.value);
+    await contract.methods.blacklist(v_id).send({from: accounts[0]});
+    console.log('success');
+    alert('Vendor status updated!');
+
   }
 
   const style = {
@@ -177,6 +213,14 @@ function AuthorityHome() {
       let v = await instance.methods.getVendor(element).call();
       vlist.push(v);
     });
+    function getBlacklisted(isBlacklisted){
+      if(isBlacklisted){
+        return "Yes";
+      }
+      else{
+        return "No";
+      }
+    };
 
     setTimeout(() => {
       console.log(vlist);
@@ -221,8 +265,9 @@ function AuthorityHome() {
                   <Grid item xs={7}>
                     <h5 style={{backgoundColor: "#DDAA00"}}>Phone: {vendor[3]}</h5>
                   </Grid>
-                  <Grid item xs={7}>
+                  <Grid item xs={8}>
                   {/* <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"black", fontSize: 'small' }} onClick={() => toggleBlacklist(vendor)}>{vendor[6] ? 'Unblacklist': 'Blacklist'} </Button> */}
+                  <h5 style={{backgoundColor: "#DDAA00"}}>Blacklisted : {getBlacklisted(vendor[6])}</h5>
                   </Grid>
                 </Grid>
               </CardContent>
@@ -653,6 +698,147 @@ function AuthorityHome() {
           </Typography>
         </Box>
       </Modal>
+      <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", marginTop: 3 }}onClick={handleOpen4} fullWidth>Refill Stock</Button>
+          <Modal
+        open={open4}
+        onClose={handleClose4}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Refill Stock- Vendor
+          </Typography>
+          {/* <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+          {allcomplaintslist}
+            
+          </Typography> */}
+          <Box component="form" onSubmit={handleRefillStock} noValidate sx={{ mt: 1 }}>
+                            
+                            <TextField
+                                  margin="normal"
+                                  required
+                                  fullWidth
+                                  id="vid"
+                                  label="Vendor ID"
+                                  name="vid"                              
+                                  autoFocus
+                                />
+                            <Button
+                              type="submit"
+                              fullWidth
+                              variant="contained"
+                              
+                              sx={{ mt: 3, mb: 2 , backgroundColor: "#DDAA00", "&:hover":{backgroundColor:'#DDAA00'}, color:"#351E10", fontWeight:"bold"}}
+                              
+                            >
+                              Submit
+                            </Button>
+                            <Grid container>
+                              <Grid item xs>
+                                
+                              </Grid>
+                              <Grid item>
+                              </Grid>
+                            </Grid>
+                          </Box>
+        </Box>
+      </Modal>
+
+      <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", marginTop: 3 }}onClick={handleOpen5} fullWidth>Refill Allowance </Button>
+          <Modal
+        open={open5}
+        onClose={handleClose5}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Refill Allowance - Consumer
+          </Typography>
+          {/* <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+          {allcomplaintslist}
+            
+          </Typography> */}
+          <Box component="form" onSubmit={refillAllowance} noValidate sx={{ mt: 1 }}>
+                            
+                            <TextField
+                                  margin="normal"
+                                  required
+                                  fullWidth
+                                  id="cid"
+                                  label="Ration ID"
+                                  name="cid"                              
+                                  autoFocus
+                                />
+                            <Button
+                              type="submit"
+                              fullWidth
+                              variant="contained"
+                              
+                              sx={{ mt: 3, mb: 2 , backgroundColor: "#DDAA00", "&:hover":{backgroundColor:'#DDAA00'}, color:"#351E10", fontWeight:"bold"}}
+                              
+                            >
+                              Submit
+                            </Button>
+                            <Grid container>
+                              <Grid item xs>
+                                
+                              </Grid>
+                              <Grid item>
+                              </Grid>
+                            </Grid>
+                          </Box>
+        </Box>
+      </Modal>
+
+      <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", marginTop: 3 }}onClick={handleOpen6} fullWidth>Toggle Blacklist Vendor </Button>
+          <Modal
+        open={open6}
+        onClose={handleClose6}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Toggle BlackList Vendor
+          </Typography>
+          {/* <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+          {allcomplaintslist}
+            
+          </Typography> */}
+          <Box component="form" onSubmit={handleBlackList} noValidate sx={{ mt: 1 }}>
+                            
+                            <TextField
+                                  margin="normal"
+                                  required
+                                  fullWidth
+                                  id="vId"
+                                  label="Vendor ID"
+                                  name="vId"                              
+                                  autoFocus
+                                />
+                            <Button
+                              type="submit"
+                              fullWidth
+                              variant="contained"
+                              
+                              sx={{ mt: 3, mb: 2 , backgroundColor: "#DDAA00", "&:hover":{backgroundColor:'#DDAA00'}, color:"#351E10", fontWeight:"bold"}}
+                              
+                            >
+                              Submit
+                            </Button>
+                            <Grid container>
+                              <Grid item xs>
+                                
+                              </Grid>
+                              <Grid item>
+                              </Grid>
+                            </Grid>
+                          </Box>
+        </Box>
+      </Modal>
+      
         </Grid>
         
       </Grid>
