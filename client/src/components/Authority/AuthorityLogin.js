@@ -78,7 +78,7 @@ function AuthorityLogin() {
         const password_error = await contract.methods.checkAdminCredentials(data.get('password'));
           
         const adminPassword = await contract.methods.getAdminPassword().call();
-        const adminAddress = await contract.methods.getAdminAdress().call();
+        const adminAddress = await contract.methods.getAdminAddress().call();
         if(password_error){
           setPassErr(false);
           if(adminAddress==accounts[0]){
@@ -86,7 +86,7 @@ function AuthorityLogin() {
             setAddrErr(false);
             // this.navigate('/consumer-home');
             console.log("GG");
-            navigate('/authority-home');
+            navigate('/authority-home',{state:{id:true}});
             // this.props.history.push("/login-consumer");
             // return <Navigate replace={true} to="/consumer-home" />
             // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />

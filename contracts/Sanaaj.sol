@@ -406,7 +406,7 @@ contract Sanaaj {
         vendorList[vendor_id].password = password1;
     }
 
-    function getAdminAdress()
+    function getAdminAddress()
         public
         view 
         returns(address)
