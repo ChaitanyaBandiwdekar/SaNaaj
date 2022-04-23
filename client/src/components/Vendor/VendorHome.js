@@ -67,7 +67,6 @@ function VendorHome(props) {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     // const state1 = location.state;
-    console.log(location.state.id);
     
     let navigate = useNavigate();
 
@@ -105,6 +104,21 @@ function VendorHome(props) {
       }
     };
 
+    function getCurrentDateTime(){
+      const locale = 'en';
+      const today = new Date();
+      const day = today.toLocaleDateString(locale, { weekday: 'long' });
+      const date = `${today.getDate()} ${today.toLocaleDateString(locale, { month: 'long', year: 'numeric' })}`;
+
+      const hour = today.getHours();
+
+      const time = today.toLocaleTimeString(locale, { hour: 'numeric', hour12: true, minute: 'numeric' });
+
+      const retString = date.concat(", ",time);
+      // console.log(day);
+      return retString;
+    };
+
     const handleUpdate= async (event)=>{
       event.preventDefault();
       const data = new FormData(event.currentTarget);
@@ -116,9 +130,10 @@ function VendorHome(props) {
       const kerosene1=parseInt(data.get('kerosene'));
       const commodity = [rice1,wheat1,sugar1,kerosene1]
       console.log(contract);
-      await contract.methods.updateAllowance(cid1,vid1,commodity,Date().toLocaleString()).send({from: accounts[0]})
+      await contract.methods.updateAllowance(cid1,vid1,commodity,getCurrentDateTime()).send({from: accounts[0]})
       alert("Allowance Updated!");
       console.log('We here');
+      handleClose();
       
     }
     const handleLogout=(event)=>{
@@ -149,12 +164,23 @@ function VendorHome(props) {
     
     // Similar to componentDidMount and componentDidUpdate:
     useEffect(async () => {
+      if(location.state == null){
+        navigate('/login-vendor');
+      }
+
+      const reloadCount = sessionStorage.getItem('reloadCount');
+      if(reloadCount < 2) {
+        sessionStorage.setItem('reloadCount', String(reloadCount + 1));
+        window.location.reload();
+      } else {
+        sessionStorage.removeItem('reloadCount');
+      }
       console.log('hello');
       console.log('hello1')
   
       const web3 = await getWeb3();
       console.log(web3)
-      console.log('hello2')
+      // console.log('hello2')
   
       const accounts = await web3.eth.getAccounts();
       console.log(accounts)
@@ -171,17 +197,17 @@ function VendorHome(props) {
       setWeb3(web3);
       setAccounts(accounts);
       setContract(instance);
-      console.log(instance);
+      // console.log(instance);
       const vendorId=location.state.id
-      console.log(typeof(vendorId));
+      // console.log(typeof(vendorId));
       // const consumerId=props.consumerId;
       const stock1 = await instance.methods.getStock(vendorId).call();
       console.log(stock1);
       setStock(stock1);
-      console.log(stock1);
+      // console.log(stock1);
       const vendor1=await instance.methods.getVendor(vendorId).call();
       setVendor(vendor1)
-      console.log(vendor1)
+      // console.log(vendor1)
       let allconsumers = await instance.methods.getAllConsumers().call();
       console.log(allconsumers);
       let list = []
@@ -249,9 +275,11 @@ function VendorHome(props) {
      )
      console.log(list1);
      setConsumerlist(list1)
-      }, 500);
+      }, 1000);
       console.log(list);
       setConsumers(list);
+
+      getCurrentDateTime();
 
       
 
@@ -259,7 +287,7 @@ function VendorHome(props) {
     
 
       
-    });
+    }, []);
 
     
   
@@ -545,6 +573,7 @@ function VendorHome(props) {
                      </Grid>
                 
             </Grid>
+            <Footer/>
             </BlockUi>
       </div>
     );

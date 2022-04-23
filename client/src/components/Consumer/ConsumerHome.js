@@ -25,7 +25,7 @@ import { useState, useEffect } from 'react';
 import Sanaaj from "../../contracts/Sanaaj.json";
 import getWeb3 from "../../getWeb3";
 import ConsumerLogin from './ConsumerLogin';
-import { useLocation, useNavigate } from "react-router-dom";
+import { Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
@@ -74,14 +74,30 @@ function ConsumerHome(props) {
     });
   };
 
+  function getCurrentDateTime(){
+    const locale = 'en';
+    const today = new Date();
+    const day = today.toLocaleDateString(locale, { weekday: 'long' });
+    const date = `${today.getDate()} ${today.toLocaleDateString(locale, { month: 'long', year: 'numeric' })}`;
+
+    const hour = today.getHours();
+
+    const time = today.toLocaleTimeString(locale, { hour: 'numeric', hour12: true, minute: 'numeric' });
+
+    const retString = date.concat(", ",time);
+    // console.log(day);
+    return retString;
+  };
+
   const handleComplain= async (event)=>{
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const complaint1=data.get('complaint');
     console.log(contract);
-    await contract.methods.addComplaint(consumer[0],consumer[6],complaint1,Date().toLocaleString()).send({from: accounts[0]})
+    await contract.methods.addComplaint(consumer[0],consumer[6],complaint1,getCurrentDateTime()).send({from: accounts[0]})
     alert("Your complaint is submitted.");
     console.log('We here');
+    handleClose();
     
     
   }
@@ -100,17 +116,27 @@ function ConsumerHome(props) {
     p: 4,
   };
     // const state1 = location.state;
-    console.log(location.state.id);
+    // console.log(location.state.id);
     
     let navigate = useNavigate();
     // Similar to componentDidMount and componentDidUpdate:
     useEffect(async () => {
+      if(location.state == null){
+        navigate('/login-consumer');
+      }
+      const reloadCount = sessionStorage.getItem('reloadCount');
+      if(reloadCount < 2) {
+        sessionStorage.setItem('reloadCount', String(reloadCount + 1));
+        window.location.reload();
+      } else {
+        sessionStorage.removeItem('reloadCount');
+      }
       console.log('hello');
       console.log('hello1')
   
       const web3 = await getWeb3();
       console.log(web3)
-      console.log('hello2')
+      // console.log('hello2')
   
       const accounts = await web3.eth.getAccounts();
       console.log(accounts)
@@ -127,22 +153,22 @@ function ConsumerHome(props) {
       setWeb3(web3);
       setAccounts(accounts);
       setContract(instance);
-      console.log(instance);
+      // console.log(instance);
       const consumerId=location.state.id
       // const consumerId=props.consumerId;
       const allowance1 = await instance.methods.getAllowance(consumerId).call();
-      console.log(allowance1);
+      // console.log(allowance1);
       setAllowance(allowance1);
-      console.log(allowance);
+      // console.log(allowance);
       const consumer1=await instance.methods.getConsumer(consumerId).call();
       setConsumer(consumer1)
-      console.log(consumer1)
+      // console.log(consumer1)
       const transaction1 = await instance.methods.getTransactions(consumerId).call();
-      console.log(transaction1);
+      // console.log(transaction1);
       setTransactions(transaction1);
       
 
-      console.log(transactions);
+      // console.log(transactions);
       const Item = styled(Paper)(({ theme }) => ({
         backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
         ...theme.typography.body2,
@@ -212,19 +238,19 @@ function ConsumerHome(props) {
         <h5 style={{backgoundColor: "#DDAA00"}}>Time: {transaction[3]}</h5>
         </Grid>
       </Grid>
-      <h6>Quantity </h6>
+      <br/>
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
               <Grid item xs={6}>
-                <Item><h6>Rice: {transaction[2][0]}</h6></Item>
+                <Item><h5>Rice: {transaction[2][0]}</h5></Item>
               </Grid>
               <Grid item xs={6}>
-                <Item><h6>Wheat: {transaction[2][1]}</h6></Item>
+                <Item><h5>Wheat: {transaction[2][1]}</h5></Item>
               </Grid>
               <Grid item xs={6}>
-                <Item><h6>Sugar: {transaction[2][2]}</h6></Item>
+                <Item><h5>Sugar: {transaction[2][2]}</h5></Item>
               </Grid>
               <Grid item xs={6}>
-                <Item><h6>Kerosene: {transaction[2][3]}</h6></Item>
+                <Item><h5>Kerosene: {transaction[2][3]}</h5></Item>
               </Grid>
             </Grid>
               </CardContent>
@@ -239,7 +265,7 @@ function ConsumerHome(props) {
                           
      )
     setTransactionlist(list)
-    });
+    }, []);
   
     // const handleSubmit = async (event) => {
     //       event.preventDefault();
@@ -541,6 +567,7 @@ function ConsumerHome(props) {
                      </Grid>
                 
             </Grid>
+            <Footer/>
       </div>
     );
   }

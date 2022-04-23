@@ -332,13 +332,13 @@ function ConsumerLogin() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const consumer = await contract.methods.getConsumer(data.get("ration-card-no")).call();
-    // console.log(consumer[4]);2
+
     const min = 1000;
     const max = 9999;
     const rand = Math.round(min + Math.random() * (max - min));
     setOtp(rand);
     const message = {
-      to: '+919619105432',
+      to: consumer[4],
       body: 'Your OTP is ' + rand 
     }
     fetch('http://127.0.0.1:3001/api/messages', {
@@ -351,11 +351,11 @@ function ConsumerLogin() {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          // alert('Password sent successfully on your registered mobile number')
+          alert('OTP sent successfully on your registered mobile number')
           
           handleOpenOtpModal();
         } else {
-          console.log('SMS sending failed')
+          alert('Otp sending failed! Please try again');
         }
       });
   }
@@ -366,9 +366,14 @@ function ConsumerLogin() {
     const otpForm = parseInt(data.get('otp'));
     if (otpForm == otp) {
       const newpass = data.get('new-password');
-      console.log(newpass);
+      await contract.methods.resetConsumerPassword(rationNo, newpass).send({from: accounts[0]});
+      setRationNo("");
+      handleCloseOtpModal();
+      handleClose();
+      alert('Password reset successful!');
     } else {
-      console.log('fail');
+      handleCloseOtpModal();
+      alert('Otp verification failed. Please try again!')
     }
   }
 
@@ -555,6 +560,7 @@ function ConsumerLogin() {
               id="new-password"
               label="New Password"
               name="new-password"
+              type="password"
               autoFocus
             />
             
