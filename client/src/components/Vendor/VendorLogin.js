@@ -18,6 +18,7 @@ import Sanaaj from "../../contracts/Sanaaj.json";
 import getWeb3 from "../../getWeb3";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
+import Modal from '@mui/material/Modal';
 
 function VendorLogin() {
   const [web3, setWeb3] = useState(null);
@@ -26,6 +27,31 @@ function VendorLogin() {
   const [passErr, setPassErr] = useState(false);
   const [addrErr, setAddrErr] = useState(false);
   const [idErr, setIdErr] = useState(false);
+  const [vendorId, setVendorId] = useState(0);
+
+  const [open, setOpen] = useState(false);
+  const [openOtpModal, setOpenOtpModal] = useState(false);
+
+  const [otp, setOtp] = useState(0);
+  const handleOpenOtpModal = () => setOpenOtpModal(true);
+  const handleCloseOtpModal = () => setOpenOtpModal(false);
+
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  };
+
   const theme = createTheme();
   let navigate = useNavigate();
   const location = useLocation();
@@ -125,6 +151,55 @@ function VendorLogin() {
         
       };
 
+  const forgotPassword = async (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const vendor = await contract.methods.getVendor(parseInt(data.get("vendor-id"))).call();
+
+    const min = 1000;
+    const max = 9999;
+    const rand = Math.round(min + Math.random() * (max - min));
+    setOtp(rand);
+    setVendorId(parseInt(data.get("vendor-id")));
+    const message = {
+      to: vendor[3],
+      body: 'Your OTP is ' + rand 
+    }
+    fetch('http://127.0.0.1:3001/api/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(message)
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert('OTP sent successfully on your registered mobile number');
+          handleOpenOtpModal();
+        } else {
+          alert('Otp sending failed! Please try again');
+        }
+      });
+  }
+
+  const resetPassword = async (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const otpForm = parseInt(data.get('otp'));
+    if (otpForm == otp) {
+      const newpass = data.get('new-password');
+      await contract.methods.resetVendorPassword(parseInt(vendorId), newpass).send({from: accounts[0]});
+      setVendorId(0);
+      handleCloseOtpModal();
+      handleClose();
+      alert('Password reset successful!');
+    } else {
+      handleCloseOtpModal();
+      alert('Otp verification failed. Please try again!')
+    }
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '90vh' }}>
@@ -195,10 +270,123 @@ function VendorLogin() {
               >
                 Sign In
               </Button>
+              <Grid container>
+                <Grid item xs>
+                  <Link href="#" variant="body2" onClick={handleOpen} > 
+                    Forgot password?
+                  </Link>
+                </Grid>
+              </Grid>
             </Box>
           </Box>
         </Grid>
       </Grid>
+
+      <Modal
+      backgroundColor="#000000"
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        
+      >
+          <Box
+          sx={
+            style
+          }
+        >
+          <Box component="form" onSubmit={forgotPassword} noValidate sx={{ mt: 1 }}>
+            <Typography>Enter your Vendor Id</Typography>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="vendor-id"
+              label="Vendor ID"
+              name="vendor-id"
+              onChange={setVendorId}
+              autoFocus
+            />
+            
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 , backgroundColor: "#DDAA00", "&:hover":{backgroundColor:'#DDAA00'}, color:"#351E10", fontWeight:"bold"}}
+              
+            >
+              Send sms
+            </Button>
+          </Box>
+        </Box>
+          
+      </Modal>
+
+      <Modal
+      backgroundColor="#000000"
+        open={openOtpModal}
+        onClose={handleCloseOtpModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        
+      >
+        {/* <Box sx={style}> */}
+          {/* <Typography id="modal-modal-title" variant="h6" component="h2">
+            File Your Complain
+          </Typography> */}
+          <Box
+          sx={
+            // marginTop: 8,
+            // display: 'flex',
+            // flexDirection: 'column',
+            // alignItems: 'center',
+            style
+          }
+        >
+          {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <LockOutlinedIcon />
+          </Avatar> */}
+          
+          <Box component="form" onSubmit={resetPassword} noValidate sx={{ mt: 1 }}>
+            <Typography>Enter your OTP</Typography>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="otp"
+              label="OTP"
+              name="otp"
+              autoFocus
+            />
+
+            <Typography>Enter your new password</Typography>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="new-password"
+              label="New Password"
+              name="new-password"
+              type="password"
+              autoFocus
+            />
+            
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              
+              sx={{ mt: 3, mb: 2 , backgroundColor: "#DDAA00", "&:hover":{backgroundColor:'#DDAA00'}, color:"#351E10", fontWeight:"bold"}}
+              
+            >
+              Reset Password
+            </Button>
+          </Box>
+        </Box>
+          
+      </Modal>
+
+
       <Footer/>
       
     </ThemeProvider>

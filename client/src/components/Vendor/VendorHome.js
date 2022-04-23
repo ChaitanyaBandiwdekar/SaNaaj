@@ -46,6 +46,8 @@ import PeopleIcon from '@mui/icons-material/People';
 import Modal from '@mui/material/Modal';
 import BlockUi from 'react-block-ui';
 import 'react-block-ui/style.css';
+import { border } from '@mui/system';
+import RectangleIcon from '@mui/icons-material/Rectangle';
 
 function VendorHome(props) {
     const [web3, setWeb3] = useState(null);
@@ -69,14 +71,14 @@ function VendorHome(props) {
     let navigate = useNavigate();
 
     function getColor(cardType){
-      if(cardType==='0'){
+      if(cardType==='1'){
         return "Saffron";
       }
-      else if(cardType==='1'){
+      else if(cardType==='2'){
         return "White";
       }
       else{
-        return "Yellow";
+        return "Green";
       }
     };
 
@@ -87,6 +89,34 @@ function VendorHome(props) {
       else{
         return "No";
       }
+    };
+    function getColorName(cardType){
+      if(cardType==='1'){
+        return "FF4500";
+        
+      }
+      else if(cardType==='2'){
+        return "white";
+       
+      }
+      else{
+        return "green";
+      }
+    };
+
+    function getCurrentDateTime(){
+      const locale = 'en';
+      const today = new Date();
+      const day = today.toLocaleDateString(locale, { weekday: 'long' });
+      const date = `${today.getDate()} ${today.toLocaleDateString(locale, { month: 'long', year: 'numeric' })}`;
+
+      const hour = today.getHours();
+
+      const time = today.toLocaleTimeString(locale, { hour: 'numeric', hour12: true, minute: 'numeric' });
+
+      const retString = date.concat(", ",time);
+      // console.log(day);
+      return retString;
     };
 
     const handleUpdate= async (event)=>{
@@ -100,11 +130,16 @@ function VendorHome(props) {
       const kerosene1=parseInt(data.get('kerosene'));
       const commodity = [rice1,wheat1,sugar1,kerosene1]
       console.log(contract);
-      await contract.methods.updateAllowance(cid1,vid1,commodity,Date().toLocaleString()).send({from: accounts[0]})
+      await contract.methods.updateAllowance(cid1,vid1,commodity,getCurrentDateTime()).send({from: accounts[0]})
       alert("Allowance Updated!");
       console.log('We here');
+      handleClose();
       
     }
+    const handleLogout=(event)=>{
+      return navigate("/");
+    }
+
 
     const style = {
       position: 'absolute',
@@ -145,7 +180,7 @@ function VendorHome(props) {
   
       const web3 = await getWeb3();
       console.log(web3)
-      console.log('hello2')
+      // console.log('hello2')
   
       const accounts = await web3.eth.getAccounts();
       console.log(accounts)
@@ -162,17 +197,17 @@ function VendorHome(props) {
       setWeb3(web3);
       setAccounts(accounts);
       setContract(instance);
-      console.log(instance);
+      // console.log(instance);
       const vendorId=location.state.id
-      console.log(typeof(vendorId));
+      // console.log(typeof(vendorId));
       // const consumerId=props.consumerId;
       const stock1 = await instance.methods.getStock(vendorId).call();
       console.log(stock1);
       setStock(stock1);
-      console.log(stock1);
+      // console.log(stock1);
       const vendor1=await instance.methods.getVendor(vendorId).call();
       setVendor(vendor1)
-      console.log(vendor1)
+      // console.log(vendor1)
       let allconsumers = await instance.methods.getAllConsumers().call();
       console.log(allconsumers);
       let list = []
@@ -195,23 +230,23 @@ function VendorHome(props) {
       setTimeout(() => {
         const list1 = list.map((consumer,index) =>
         <div>
-            <Card sx={{ minWidth: 275, padding: 1, margin: 1, backgroundColor:"#DDAA00"}}>
+            <Card sx={{ minWidth: 275, padding: 1, margin: 1, backgroundColor:"#DDAA00", }}  >
               <CardContent>
               <Grid container spacing={1} columns={16} style={{fontFamily: 'Montserrat'}}>
         <Grid item xs={8}>
-        <h5 style={{backgoundColor: "#DDAA00"}}>Name : {consumer[2]} {consumer[3]}</h5>
+        <h5 style={{}}>Name : {consumer[2]} {consumer[3]}</h5>
             
           
           
         </Grid>
         <Grid item xs={8}>
-        <h5 style={{backgoundColor: "#DDAA00"}}>ConsumerId : {consumer[0]}</h5>
+        <h5 style={{color:'#351E10', }}>ConsumerId : {consumer[0]}</h5>
         </Grid>
-        <Grid item xs={7}>
-        <h5 style={{backgoundColor: "#DDAA00"}}>CardType: {getColor(consumer[1])}</h5>
+        <Grid item xs={8}>
+        <h5 style={{display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10"}}><RectangleIcon style={{color:getColorName(consumer[1])}}></RectangleIcon>CardType: {getColor(consumer[1])}</h5>
         </Grid>
-        <Grid item xs={7}>
-        <h5 style={{backgoundColor: "#DDAA00"}}>Phone: {consumer[4]}</h5>
+        <Grid item xs={8}>
+        <h5 style={{color:'#351E10'}}>Phone: {consumer[4]}</h5>
         </Grid>
       </Grid>
       {/* <h6>Quantity </h6>
@@ -240,9 +275,11 @@ function VendorHome(props) {
      )
      console.log(list1);
      setConsumerlist(list1)
-      }, 500);
+      }, 1000);
       console.log(list);
       setConsumers(list);
+
+      getCurrentDateTime();
 
       
 
@@ -280,7 +317,7 @@ function VendorHome(props) {
                         <AccountCircleIcon style={{fontSize:30, }}></AccountCircleIcon>My Profile
                         </Typography> */}
                         
-                        <Card sx={{ minWidth: 275, backgroundColor:'whitesmoke', "&:hover":{backgroundColor: "white"},margin: 1, textAlign: 'left',borderRadius:2}}>
+                        <Card sx={{ minWidth: 275, backgroundColor:'whitesmoke', "&:hover":{backgroundColor: "white"},margin: 1, textAlign: 'left',boxShadow:6}}>
                           <CardContent>
                             <p style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10", fontSize: 20, fontWeight:"bold"}}> <AccountCircleIcon style={{fontSize:30, }}></AccountCircleIcon>My Profile</p>
                               <br></br><hr></hr><br></br>
@@ -291,7 +328,8 @@ function VendorHome(props) {
                               <CancelIcon sx={{ position: 'relative', top: 5}}/> Blacklisted - {getBlacklisted(vendor[6])} <br></br> <br></br>
                           </CardContent>
                         </Card>                        
-                      <Button sx={{justifyContent:"center"}} style={{backgroundColor:"#351E10", color: "#DDAA00",}} fullWidth onClick={handleOpen}>Update Allowance</Button>
+                      <Button  sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' } }} fullWidth onClick={handleOpen}>Update Allowance</Button>
+                      <Button  sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' }, marginTop:3 }} fullWidth onClick={handleLogout}>Logout</Button>
                         
                         </div>
                    
@@ -304,7 +342,7 @@ function VendorHome(props) {
                      <Box sx={{borderRadius:2,  height:'80vh'}}>
                     
                         <div>
-                        <Card sx={{ minWidth: 275 ,backgroundColor:'whitesmoke', "&:hover":{backgroundColor: "white"},margin: 1, textAlign: 'left',borderRadius:2}}>
+                        <Card sx={{ minWidth: 275 ,backgroundColor:'whitesmoke', "&:hover":{backgroundColor: "white"},margin: 1, textAlign: 'left',borderRadius:2, boxShadow:6}}>
                           <CardContent>
                             <p style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10", fontSize: 20, fontWeight:"bold"}}> <PeopleIcon style={{fontSize:30, }}></PeopleIcon>My Consumers</p>
                               <br></br><hr></hr><br></br>
@@ -432,7 +470,7 @@ function VendorHome(props) {
                      <Box sx={{  width: 1,  height:'80vh' , borderRadius:5}}>
                    
                         <div>
-                        <Card sx={{ minWidth: 275, backgroundColor:'whitesmoke', "&:hover":{backgroundColor: "white"},margin: 1, textAlign: 'left',borderRadius:2}}>
+                        <Card sx={{ minWidth: 275, backgroundColor:'whitesmoke', "&:hover":{backgroundColor: "white"},margin: 1, textAlign: 'left',borderRadius:2, boxShadow:6}}>
                           <CardContent>
                             <p style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10", fontSize: 20, fontWeight:"bold"}}> <GradingIcon style={{fontSize:30, }}></GradingIcon>Current Stock</p>
                               <br></br><hr></hr><br></br>
@@ -535,6 +573,7 @@ function VendorHome(props) {
                      </Grid>
                 
             </Grid>
+            <Footer/>
             </BlockUi>
       </div>
     );

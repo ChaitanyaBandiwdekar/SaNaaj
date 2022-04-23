@@ -8,7 +8,7 @@ html, body, #app, #app>div {
 }
 
 body{
-  background-color: #DDAA00;
+  background-color: #FDEFB2;
   font-family: 'Montserrat', sans-serif;
   
 }.App {
@@ -37,7 +37,6 @@ body{
 .footer {
   background-color: #351E10;
   position: absolute;
-  bottom: 0;
   width: 100%;
   color: #DDAA00;
   font-size: 20px;

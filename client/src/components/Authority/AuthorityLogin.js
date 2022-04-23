@@ -78,10 +78,43 @@ function AuthorityLogin() {
         const password_error = await contract.methods.checkAdminCredentials(data.get('password'));
           
         const adminPassword = await contract.methods.getAdminPassword().call();
+        const adminAddress = await contract.methods.getAdminAddress().call();
         if(password_error){
-            navigate('/authority-home');
+          setPassErr(false);
+          if(adminAddress==accounts[0]){
+
+            setAddrErr(false);
+            // this.navigate('/consumer-home');
+            console.log("GG");
+            navigate('/authority-home',{state:{id:true}});
+            // this.props.history.push("/login-consumer");
+            // return <Navigate replace={true} to="/consumer-home" />
+            // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
+            // window.location.href='/consumer-home';
+          
+          }
+          else{
+            console.log("Incorrect wallet address");
+            // navigate('/login-consumer');
+            setAddrErr(true);
+            // navigate.push('/login-consumer');
+            // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
+          }
         }
-      }
+        else{
+          console.log("Incorrect password");
+          // navigate('/login-consumer');
+          setPassErr(true);
+          // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
+        }
+          }
+
+          
+        // await contract.methods.updateAllowance(data.get('id'), 1, [1, 1, 0, 1], Date().toLocaleString()).send({from: accounts[0]});
+        // const transactions = await contract.methods.getTransactions(data.get("id")).call();
+        
+        
+   
 
           
         // await contract.methods.updateAllowance(data.get('id'), 1, [1, 1, 0, 1], Date().toLocaleString()).send({from: accounts[0]});
@@ -150,7 +183,9 @@ function AuthorityLogin() {
               />
 
               
+              
               {passErr? <div style={{color:"red"}}>Incorrect password</div> : <div></div>}
+              {addrErr? <div style={{color:"red"}}>Incorrect address</div> : <div></div>}
               
 
               <Button

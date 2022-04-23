@@ -36,6 +36,11 @@ import Modal from '@mui/material/Modal';
 
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import RectangleIcon from '@mui/icons-material/Rectangle';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 function AuthorityHome() {
   const [web3, setWeb3] = useState(null);
   const [accounts, setAccounts] = useState(null);
@@ -44,17 +49,32 @@ function AuthorityHome() {
   const [vendorList, setVendorList] = useState([]);
   const [complaitList,setComplaitList]=useState([])
   const[allcomplaintslist,setallcomplaintslist]=useState([]);
-
-
+  let navigate = useNavigate();
+ 
   function getColor(cardType){
-    if(cardType==='0'){
+    if(cardType==='1'){
       return "Saffron";
+      
     }
-    else if(cardType==='1'){
+    else if(cardType==='2'){
       return "White";
+     
     }
     else{
-      return "Yellow";
+      return "Green";
+    }
+  };
+  function getColorName(cardType){
+    if(cardType==='1'){
+      return "FF4500";
+      
+    }
+    else if(cardType==='2'){
+      return "white";
+     
+    }
+    else{
+      return "green";
     }
   };
   const [open1, setOpen1] = React.useState(false);
@@ -63,25 +83,30 @@ function AuthorityHome() {
   const [open4, setOpen4] = React.useState(false);
   const [open5, setOpen5] = React.useState(false);
   const [open6, setOpen6] = React.useState(false);
+  const [open7, setOpen7] = React.useState(false);
   const handleOpen1 = () => setOpen1(true);
   const handleOpen2 = () => setOpen2(true);
   const handleOpen3 = () => setOpen3(true);
   const handleOpen4 = () => setOpen4(true);
   const handleOpen5 = () => setOpen5(true);
   const handleOpen6 = () => setOpen6(true);
+  const handleOpen7 = () => setOpen7(true);
   const handleClose1 = () => setOpen1(false);
   const handleClose2 = () => setOpen2(false);
   const handleClose3 = () => setOpen3(false);
   const handleClose4 = () => setOpen4(false);
   const handleClose5 = () => setOpen5(false);
   const handleClose6 = () => setOpen6(false);
+  const handleClose7 = () => setOpen7(false);
   const handleAddConsumer= async (event)=>{
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const ration_card=event.target.ration_card.value;
     const ration_card_type=parseInt(event.target.ration_card_type.value);
     const first_name=event.target.first_name.value;
-    const last_name=event.target.last_name.value
+    const last_name=event.target.last_name.value;
+    const adults=event.target.adults.value;
+    const children=event.target.children.value;
     const phone=event.target.phone.value;
    const location=event.target.location.value;
        const vendor_id=parseInt(event.target.vendor_id.value);
@@ -98,9 +123,14 @@ function AuthorityHome() {
       location,
       vendor_id,
       password,
-      wallet_addr).send({from: accounts[0]})
+      wallet_addr,
+      adults,
+      children).send({from: accounts[0]})
     alert("New Consumer is added");
-    console.log('We here'); 
+    console.log('We here');
+    handleClose1();
+    
+    
   }
   const handleAddVendor= async (event)=>{
     event.preventDefault();
@@ -125,6 +155,7 @@ function AuthorityHome() {
       isBlacklisted,
       wallet_addr).send({from: accounts[0]})
     alert("New Vendor is added");
+    handleClose2();
     
     
     
@@ -135,7 +166,8 @@ function AuthorityHome() {
     const vendor_id=parseInt(event.target.vid.value);
     await contract.methods.refillStock(vendor_id).send({from: accounts[0]})
     console.log('success')
-    alert('Stock updated successfully for vendor!')
+    alert('Stock updated successfully for vendor!');
+    handleClose4();
   }
   const refillAllowance=async(event)=>{
     event.preventDefault();
@@ -144,6 +176,7 @@ function AuthorityHome() {
     await contract.methods.refillAllowance(c_id).send({from: accounts[0]});
     console.log('success');
     alert('Allowance updated successfully for consumers!');
+    handleClose5();
 
   }
   const handleBlackList=async(event)=>{
@@ -154,6 +187,23 @@ function AuthorityHome() {
     console.log('success');
     alert('Vendor status updated!');
 
+  }
+  const handleCardType=async(event)=>{
+    event.preventDefault();
+    const c_id=event.target.C_id.value;
+    const newcardtype=event.target.card_type.value;
+    const consumer=await contract.methods.getConsumer(c_id).call();
+    if(consumer[1]==newcardtype){
+      alert('Already same card type!');
+
+    }
+    else{
+      await contract.methods.updateCardType(c_id,newcardtype).send({from:accounts[0]});
+      alert('Updated card type!');
+    }
+  }
+  const handleLogout=(event)=>{
+    return navigate("/");
   }
 
   const style = {
@@ -171,7 +221,7 @@ function AuthorityHome() {
 
   };
 
-  let navigate = useNavigate();
+ 
   const location = useLocation();
   useEffect(async () => {
     if(location.state == null){
@@ -241,9 +291,10 @@ function AuthorityHome() {
                     <h5 style={{backgoundColor: "#DDAA00"}}>ConsumerId : {consumer[0]}</h5>
                   </Grid>
                   <Grid item xs={7}>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>CardType: {getColor(consumer[1])}</h5>
+                    
+                    <h5 style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10"}}>CardType: {getColor(consumer[1])}   <RectangleIcon style={{color:getColorName(consumer[1])}}></RectangleIcon> </h5>
                   </Grid>
-                  <Grid item xs={7}>
+                  <Grid item xs={8}>
                     <h5 style={{backgoundColor: "#DDAA00"}}>Phone: {consumer[4]}</h5>
                   </Grid>
                 </Grid>
@@ -267,7 +318,7 @@ function AuthorityHome() {
                   {/* <Grid item xs={7}>
                     <h5 style={{backgoundColor: "#DDAA00"}}>CardType: {getColor(consumer[1])}</h5>
                   </Grid> */}
-                  <Grid item xs={7}>
+                  <Grid item xs={8}>
                     <h5 style={{backgoundColor: "#DDAA00"}}>Phone: {vendor[3]}</h5>
                   </Grid>
                   <Grid item xs={8}>
@@ -319,7 +370,7 @@ function AuthorityHome() {
      setConsumerList(list1);
      setVendorList(list2);
      setallcomplaintslist(list3)
-    }, 1000);
+    }, 2000);
   }, []);
 
   // const toggleBlacklist = async function (vendor) {
@@ -365,7 +416,7 @@ function AuthorityHome() {
           </Card>
         </Grid>
         <Grid item xs={2}>
-        <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10" }} onClick={handleOpen1} fullWidth>Add Consumer</Button>
+        <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' } }} onClick={handleOpen1} fullWidth>Add Consumer</Button>
       
       <Modal
       backgroundColor="#000000"
@@ -392,7 +443,7 @@ function AuthorityHome() {
             <LockOutlinedIcon />
           </Avatar> */}
           
-          <Box component="form" onSubmit={handleAddConsumer} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleAddConsumer} noValidate sx={{ mt: 1, maxHeight: '65vh', overflowY: 'scroll' }} className="scroll">
             <Typography>Add Consumer</Typography>
             <TextField
             
@@ -404,6 +455,8 @@ function AuthorityHome() {
               
               autoFocus
             />
+            <Grid container spacing={2}>
+            <Grid item xs={6}>
             <TextField
               margin="normal"
               required
@@ -414,8 +467,23 @@ function AuthorityHome() {
               
               autoFocus
             />
+            </Grid>
+            <Grid item xs={6}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="vendor_id"
+              label="Vendor ID"
+              name="vendor_id"
+              
+              autoFocus
+            />
+            </Grid>
+            </Grid>
+            <br/>
             <Grid container spacing={2}>
-            <Grid item xs={4}>
+            <Grid item xs={6}>
             <TextField
               
               required
@@ -428,7 +496,7 @@ function AuthorityHome() {
             />
 
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={6}>
             <TextField
               
               required
@@ -436,6 +504,35 @@ function AuthorityHome() {
               id="last_name"
               label="Last Name"
               name="last_name"
+              
+              autoFocus
+            />
+
+            </Grid>
+            </Grid>
+            <br/>
+            <Grid container spacing={2}>
+            <Grid item xs={6}>
+            <TextField
+              
+              required
+              
+              id="adults"
+              label="No. of Adults"
+              name="adults"
+              
+              autoFocus
+            />
+
+            </Grid>
+            <Grid item xs={6}>
+            <TextField
+              
+              required
+              
+              id="children"
+              label="No. of Children"
+              name="children"
               
               autoFocus
             />
@@ -466,16 +563,7 @@ function AuthorityHome() {
               
               autoFocus
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="vendor_id"
-              label="Vendor ID"
-              name="vendor_id"
-              
-              autoFocus
-            />
+            
             <TextField
               margin="normal"
               required
@@ -483,6 +571,7 @@ function AuthorityHome() {
               id="password"
               label="New password for consumer"
               name="password"
+              type="password"
               
               autoFocus
             />
@@ -532,7 +621,8 @@ function AuthorityHome() {
       <br></br>
       <br></br>
           {/* <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"black" }} fullWidth>Add Consumer</Button> */}
-          <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10" }} onClick={handleOpen2} fullWidth>Add Vendor</Button>
+          <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' } }} onClick={handleOpen2} fullWidth>Add Vendor</Button>
+          <br></br><br></br><hr></hr>
           <Modal
       backgroundColor="#000000"
         open={open2}
@@ -630,6 +720,7 @@ function AuthorityHome() {
               id="Password"
               label="Password"
               name="Password"
+              type="password"
               
               autoFocus
             />
@@ -686,7 +777,11 @@ function AuthorityHome() {
           
         {/* </Box> */}
       </Modal>
-          <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", marginTop: 3 }}onClick={handleOpen3} fullWidth>View Complains</Button>
+      <Button sx={{ border: 1,borderColor: '#351E10', marginTop: 3, color:"white", backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' } }} onClick={handleOpen5} fullWidth>Refill Allowance </Button>
+      <Button sx={{ border: 1,borderColor: '#351E10', color:"white", marginTop: 3,backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' } }} onClick={handleOpen4} fullWidth>Refill Stock</Button>
+      
+<br></br><br></br><hr></hr>
+          <Button sx={{ border: 1,borderColor: '#351E10', color:"white",marginTop: 3, backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' } }} onClick={handleOpen3} fullWidth>View Complains</Button>
           <Modal
         open={open3}
         onClose={handleClose3}
@@ -703,7 +798,7 @@ function AuthorityHome() {
           </Typography>
         </Box>
       </Modal>
-      <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", marginTop: 3 }}onClick={handleOpen4} fullWidth>Refill Stock</Button>
+      
           <Modal
         open={open4}
         onClose={handleClose4}
@@ -750,7 +845,7 @@ function AuthorityHome() {
         </Box>
       </Modal>
 
-      <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", marginTop: 3 }}onClick={handleOpen5} fullWidth>Refill Allowance </Button>
+     
           <Modal
         open={open5}
         onClose={handleClose5}
@@ -797,7 +892,7 @@ function AuthorityHome() {
         </Box>
       </Modal>
 
-      <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", marginTop: 3 }}onClick={handleOpen6} fullWidth>Toggle Blacklist Vendor </Button>
+      <Button sx={{ border: 1,borderColor: '#351E10', color:"white", marginTop: 3, backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white', } }} onClick={handleOpen6} fullWidth>Toggle Blacklist Vendor </Button>
           <Modal
         open={open6}
         onClose={handleClose6}
@@ -843,13 +938,81 @@ function AuthorityHome() {
                           </Box>
         </Box>
       </Modal>
+      <br></br><br></br><hr></hr>
+      <Button sx={{ border: 1,borderColor: '#351E10', color:"white", marginTop: 3,backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' } }} onClick={handleOpen7} fullWidth>Update Consumer's Card type</Button>
+      <Button  sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' }, marginTop:3 }} fullWidth onClick={handleLogout}>Logout</Button>
+
+               
+
+<Modal
+        open={open7}
+        onClose={handleClose7}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Toggle BlackList Vendor
+          </Typography>
+          {/* <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+          {allcomplaintslist}
+            
+          </Typography> */}
+          <Box component="form" onSubmit={handleCardType} noValidate sx={{ mt: 1 }}>
+                            
+                            <TextField
+                                  margin="normal"
+                                  required
+                                  fullWidth
+                                  id="C_id"
+                                  label="Ration card number"
+                                  name="C_id"                              
+                                  autoFocus
+                                />
+                               
+        <Select
+          labelId="cardtype"
+          id="card_type"
+          name="card_type"
+          label="Card type"
+          fullWidth
+          placeholder='Ration card type'
+          
+        >
+          <MenuItem value={1}>1-Saffron</MenuItem>
+          <MenuItem value={2}>2-White</MenuItem>
+          <MenuItem value={3}>3-Yellow</MenuItem>
+        </Select>
+                            <Button
+                              type="submit"
+                              fullWidth
+                              variant="contained"
+                              
+                              sx={{ mt: 3, mb: 2 , backgroundColor: "#DDAA00", "&:hover":{backgroundColor:'#DDAA00'}, color:"#351E10", fontWeight:"bold"}}
+                              
+                            >
+                              Submit
+                            </Button>
+                            <Grid container>
+                              <Grid item xs>
+                                
+                              </Grid>
+                              <Grid item>
+                              </Grid>
+                            </Grid>
+                          </Box>
+        </Box>
+      </Modal>
+            
       
         </Grid>
         
       </Grid>
     </Box>
+    <Footer/>
         </div>
     );
    
     } 
 export default AuthorityHome;
+

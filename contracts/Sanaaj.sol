@@ -16,6 +16,8 @@ library AssetLibrary {
         uint256 vendor_id;
         string password;
         address wallet_addr;
+        uint256 num_of_adults;
+        uint256 num_of_children;
     }
 
     struct Vendor {
@@ -68,7 +70,9 @@ contract Sanaaj {
             "Mumbai",
             1,
             "0x134563d4e440f0e418b0f382f23a2cf301af6d7f648ccfae9895018345d779a3", //"Hello123"
-            0x9345BaF04A62F6A91d20aa08121a16eB39308b70
+            0xFc43ee9441590F044136fC8B225483188a11de92,
+            2,
+            2
         );
         consumerList["MH1234509666"] = AssetLibrary.Consumer(
             "MH1234509666",
@@ -79,7 +83,9 @@ contract Sanaaj {
             "Mumbai",
             1,
             "0x75ca1baec3f3382989affc4cadb0cc93f47e946b247e3a655c6b36d43e64dd2a", //"Hello1234"
-            0xB793c1d9c9D5050859864DbD321Fc873e7942e54
+            0xB793c1d9c9D5050859864DbD321Fc873e7942e54,
+            2,
+            3
         );
         consumerList["MH1234509876"] = AssetLibrary.Consumer(
             "MH1234509876",
@@ -90,7 +96,9 @@ contract Sanaaj {
             "Mumbai",
             1,
             "0xbaa0487be7b20f0a7c20804a38771626ec1b04476a9ac7d7b55ba1b80bc2ad2f", //"Hello1235"
-            0xb7C6562BF283534A775d5198195bfD8d47D22647
+            0xb7C6562BF283534A775d5198195bfD8d47D22647,
+            3,
+            2
         );
         consumerList["MH9876541230"] = AssetLibrary.Consumer(
             "MH9876541230",
@@ -101,7 +109,9 @@ contract Sanaaj {
             "Mumbai",
             2,
             "0xa9df37c2d65ced953698bab7a72d9a31b4e7e25e2de561d1d127a8b06b6d70f3", //"Hello1236"
-            0xb6444A785Bc6d27d3fAcb648dc0714C39F569B24
+            0xb6444A785Bc6d27d3fAcb648dc0714C39F569B24,
+            4,
+            2
         );
         consumerList["MH9876504321"] = AssetLibrary.Consumer(
             "MH9876504321",
@@ -112,7 +122,9 @@ contract Sanaaj {
             "Mumbai",
             2,
             "facd7b3ff9742230f7202864686d424250d70957bd99d8475236f76d1a9e788b", //"Hello1237"
-            0x97b814cdcD7F542f413E2CFef8AF97c6633ffF3D
+            0x97b814cdcD7F542f413E2CFef8AF97c6633ffF3D,
+            2,
+            6
         );
 
         vendorList[1] = AssetLibrary.Vendor(
@@ -145,7 +157,7 @@ contract Sanaaj {
             "MH9876504321"
         ];
         vendorIDList = [1, 2];
-        adminAddress = 0x1964F1519FF7ACAa5E6b2462070cB0d6817FbA4E;
+        adminAddress = 0xfFf0a5E8dA571A7e20c053F4D3c127b0c38C925C;
     }
 
     function getAdminPassword() public view returns (string memory) {
@@ -252,6 +264,8 @@ contract Sanaaj {
         );
     }
 
+    
+
     function getTransactions(string memory _ration)
         public
         view
@@ -261,22 +275,24 @@ contract Sanaaj {
     }
 
     function refillAllowance(string memory _ration) public {
+        
         if (consumerList[_ration].ration_card_type == 1) {
-            allowanceList[_ration]["Rice"] = 5;
-            allowanceList[_ration]["Wheat"] = 10;
-            allowanceList[_ration]["Sugar"] = 1;
-            allowanceList[_ration]["Kerosene"] = 5;
+            allowanceList[_ration]["Rice"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*5;
+            allowanceList[_ration]["Wheat"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*5;
+            allowanceList[_ration]["Sugar"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*1;
+            allowanceList[_ration]["Kerosene"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*5;
         } else if (consumerList[_ration].ration_card_type == 2) {
-            allowanceList[_ration]["Rice"] = 10;
-            allowanceList[_ration]["Wheat"] = 15;
-            allowanceList[_ration]["Sugar"] = 2;
-            allowanceList[_ration]["Kerosene"] = 7;
+            allowanceList[_ration]["Rice"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*6;
+            allowanceList[_ration]["Wheat"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*6;
+            allowanceList[_ration]["Sugar"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*1;
+            allowanceList[_ration]["Kerosene"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*6;
         } else {
-            allowanceList[_ration]["Rice"] = 12;
-            allowanceList[_ration]["Wheat"] = 17;
-            allowanceList[_ration]["Sugar"] = 3;
-            allowanceList[_ration]["Kerosene"] = 10;
+            allowanceList[_ration]["Rice"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*7;
+            allowanceList[_ration]["Wheat"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*7;
+            allowanceList[_ration]["Sugar"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*2;
+            allowanceList[_ration]["Kerosene"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*7;
         }
+        
     }
 
     function refillStock(uint256 _vendorID) public {
@@ -303,7 +319,9 @@ contract Sanaaj {
         string memory location,
         uint256 vendor_id,
         string memory password,
-        address wallet_addr
+        address wallet_addr,
+        uint256 num_adults,
+        uint256 num_children
     ) public {
         // require(sha256(abi.encodePacked()) == sha256(abi.encodePacked()));
         AssetLibrary.Consumer memory consumer = AssetLibrary.Consumer(
@@ -315,7 +333,9 @@ contract Sanaaj {
             location,
             vendor_id,
             toHex(sha256(abi.encodePacked(password))),
-            wallet_addr
+            wallet_addr,
+            num_adults,
+            num_children
         );
 
         consumerList[ration_card] = consumer;
@@ -384,6 +404,14 @@ contract Sanaaj {
     {
         string memory password1 = toHex(sha256(abi.encodePacked(new_password)));
         vendorList[vendor_id].password = password1;
+    }
+
+    function getAdminAddress()
+        public
+        view 
+        returns(address)
+    {
+        return adminAddress;
     }
 
     function checkConsumerCredentials(
