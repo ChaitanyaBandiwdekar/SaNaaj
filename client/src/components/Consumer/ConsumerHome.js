@@ -85,6 +85,9 @@ function ConsumerHome(props) {
     
     
   }
+  const handleLogout=(event)=>{
+    return navigate("/");
+  }
   const style = {
     position: 'absolute',
     top: '50%',
@@ -152,7 +155,7 @@ function ConsumerHome(props) {
       const c=setColor("blue");
       console.log(c);
       if (cardtype==1) {
-        setColor("orange");
+        setColor("FF4500");
         setColorname("saffron")
         
       } 
@@ -161,8 +164,8 @@ function ConsumerHome(props) {
         setColorname("white");
       }
       else{
-        setColor("yellow");
-        setColorname("yellow");
+        setColor("green");
+        setColorname("green");
        
       }
       
@@ -331,7 +334,8 @@ function ConsumerHome(props) {
                           
                           <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:color }} style={{color:"white", backgroundColor:color, borderColor:"#351E10"}} fullWidth>Ration Card Type: {colorname}</Button>
                           <br></br><br></br>
-      <Button  onClick={handleOpen} style={{backgroundColor:"#351E10", color: "#DDAA00",}} fullWidth>File a Complain</Button>
+      <Button  onClick={handleOpen} sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' } }} fullWidth>File a Complain</Button>
+      <Button  sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' }, marginTop:3 }} fullWidth onClick={handleLogout}>Logout</Button>
       
       <Modal
       backgroundColor="#000000"
