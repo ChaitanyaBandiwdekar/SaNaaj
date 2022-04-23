@@ -123,7 +123,7 @@ contract Sanaaj {
             "Mumbai",
             "0x9f66dc74cb77e162097a36ddc845799b69f7d721e4146b7f69c873ed9c96697e", //"hello987"
             false,
-            0x81472D49E156dfbe98c2d3B311fb0512756Fe155
+            0x675A7359e0d96b9A25DCA5d08e1f1Ee85B9cD24f
         );
         vendorList[2] = AssetLibrary.Vendor(
             2,
