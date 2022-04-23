@@ -221,7 +221,7 @@ function AuthorityHome() {
 
   };
 
-  let navigate = useNavigate();
+ 
   const location = useLocation();
   useEffect(async () => {
     if(location.state == null){

@@ -78,9 +78,10 @@ function AuthorityLogin() {
         const password_error = await contract.methods.checkAdminCredentials(data.get('password'));
           
         const adminPassword = await contract.methods.getAdminPassword().call();
+        const adminAddress = await contract.methods.getAdminAdress().call();
         if(password_error){
           setPassErr(false);
-          if(true){
+          if(adminAddress==accounts[0]){
 
             setAddrErr(false);
             // this.navigate('/consumer-home');
