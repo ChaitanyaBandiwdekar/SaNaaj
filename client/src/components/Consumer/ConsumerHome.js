@@ -25,7 +25,7 @@ import { useState, useEffect } from 'react';
 import Sanaaj from "../../contracts/Sanaaj.json";
 import getWeb3 from "../../getWeb3";
 import ConsumerLogin from './ConsumerLogin';
-import { useLocation, useNavigate } from "react-router-dom";
+import { Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
@@ -97,11 +97,21 @@ function ConsumerHome(props) {
     p: 4,
   };
     // const state1 = location.state;
-    console.log(location.state.id);
+    // console.log(location.state.id);
     
     let navigate = useNavigate();
     // Similar to componentDidMount and componentDidUpdate:
     useEffect(async () => {
+      if(location.state == null){
+        navigate('/login-consumer');
+      }
+      const reloadCount = sessionStorage.getItem('reloadCount');
+      if(reloadCount < 2) {
+        sessionStorage.setItem('reloadCount', String(reloadCount + 1));
+        window.location.reload();
+      } else {
+        sessionStorage.removeItem('reloadCount');
+      }
       console.log('hello');
       console.log('hello1')
   
@@ -236,7 +246,7 @@ function ConsumerHome(props) {
                           
      )
     setTransactionlist(list)
-    });
+    }, []);
   
     // const handleSubmit = async (event) => {
     //       event.preventDefault();

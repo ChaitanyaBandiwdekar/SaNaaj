@@ -65,7 +65,6 @@ function VendorHome(props) {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     // const state1 = location.state;
-    console.log(location.state.id);
     
     let navigate = useNavigate();
 
@@ -130,6 +129,17 @@ function VendorHome(props) {
     
     // Similar to componentDidMount and componentDidUpdate:
     useEffect(async () => {
+      if(location.state == null){
+        navigate('/login-vendor');
+      }
+
+      const reloadCount = sessionStorage.getItem('reloadCount');
+      if(reloadCount < 2) {
+        sessionStorage.setItem('reloadCount', String(reloadCount + 1));
+        window.location.reload();
+      } else {
+        sessionStorage.removeItem('reloadCount');
+      }
       console.log('hello');
       console.log('hello1')
   
@@ -240,7 +250,7 @@ function VendorHome(props) {
     
 
       
-    });
+    }, []);
 
     
   
