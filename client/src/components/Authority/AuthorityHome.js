@@ -21,7 +21,7 @@ import { Card, CardActionArea, CardMedia, CardContent, Grid  } from "@mui/materi
 import { useState, useEffect } from 'react';
 import Sanaaj from "../../contracts/Sanaaj.json";
 import getWeb3 from "../../getWeb3";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
@@ -33,6 +33,7 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import HomeIcon from '@mui/icons-material/Home';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import Modal from '@mui/material/Modal';
+
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 function AuthorityHome() {
@@ -80,7 +81,9 @@ function AuthorityHome() {
     const ration_card=event.target.ration_card.value;
     const ration_card_type=parseInt(event.target.ration_card_type.value);
     const first_name=event.target.first_name.value;
-    const last_name=event.target.last_name.value
+    const last_name=event.target.last_name.value;
+    const adults=event.target.adults.value;
+    const children=event.target.children.value;
     const phone=event.target.phone.value;
    const location=event.target.location.value;
        const vendor_id=parseInt(event.target.vendor_id.value);
@@ -97,9 +100,12 @@ function AuthorityHome() {
       location,
       vendor_id,
       password,
-      wallet_addr).send({from: accounts[0]})
+      wallet_addr,
+      adults,
+      children).send({from: accounts[0]})
     alert("New Consumer is added");
     console.log('We here');
+    handleClose1();
     
     
   }
@@ -126,6 +132,7 @@ function AuthorityHome() {
       isBlacklisted,
       wallet_addr).send({from: accounts[0]})
     alert("New Vendor is added");
+    handleClose2();
     
     
     
@@ -136,7 +143,8 @@ function AuthorityHome() {
     const vendor_id=parseInt(event.target.vid.value);
     await contract.methods.refillStock(vendor_id).send({from: accounts[0]})
     console.log('success')
-    alert('Stock updated successfully for vendor!')
+    alert('Stock updated successfully for vendor!');
+    handleClose4();
   }
   const refillAllowance=async(event)=>{
     event.preventDefault();
@@ -145,6 +153,7 @@ function AuthorityHome() {
     await contract.methods.refillAllowance(c_id).send({from: accounts[0]});
     console.log('success');
     alert('Allowance updated successfully for consumers!');
+    handleClose5();
 
   }
   const handleBlackList=async(event)=>{
@@ -172,7 +181,13 @@ function AuthorityHome() {
 
   };
 
+  let navigate = useNavigate();
+  const location = useLocation();
   useEffect(async () => {
+    if(location.state == null){
+      navigate('/login-authority');
+    }
+
     const reloadCount = sessionStorage.getItem('reloadCount');
     if(reloadCount < 2) {
       sessionStorage.setItem('reloadCount', String(reloadCount + 1));
@@ -387,7 +402,7 @@ function AuthorityHome() {
             <LockOutlinedIcon />
           </Avatar> */}
           
-          <Box component="form" onSubmit={handleAddConsumer} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleAddConsumer} noValidate sx={{ mt: 1, maxHeight: '65vh', overflowY: 'scroll' }} className="scroll">
             <Typography>Add Consumer</Typography>
             <TextField
             
@@ -399,6 +414,8 @@ function AuthorityHome() {
               
               autoFocus
             />
+            <Grid container spacing={2}>
+            <Grid item xs={6}>
             <TextField
               margin="normal"
               required
@@ -409,8 +426,23 @@ function AuthorityHome() {
               
               autoFocus
             />
+            </Grid>
+            <Grid item xs={6}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="vendor_id"
+              label="Vendor ID"
+              name="vendor_id"
+              
+              autoFocus
+            />
+            </Grid>
+            </Grid>
+            <br/>
             <Grid container spacing={2}>
-            <Grid item xs={4}>
+            <Grid item xs={6}>
             <TextField
               
               required
@@ -423,7 +455,7 @@ function AuthorityHome() {
             />
 
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={6}>
             <TextField
               
               required
@@ -431,6 +463,35 @@ function AuthorityHome() {
               id="last_name"
               label="Last Name"
               name="last_name"
+              
+              autoFocus
+            />
+
+            </Grid>
+            </Grid>
+            <br/>
+            <Grid container spacing={2}>
+            <Grid item xs={6}>
+            <TextField
+              
+              required
+              
+              id="adults"
+              label="No. of Adults"
+              name="adults"
+              
+              autoFocus
+            />
+
+            </Grid>
+            <Grid item xs={6}>
+            <TextField
+              
+              required
+              
+              id="children"
+              label="No. of Children"
+              name="children"
               
               autoFocus
             />
@@ -461,16 +522,7 @@ function AuthorityHome() {
               
               autoFocus
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="vendor_id"
-              label="Vendor ID"
-              name="vendor_id"
-              
-              autoFocus
-            />
+            
             <TextField
               margin="normal"
               required
@@ -843,6 +895,7 @@ function AuthorityHome() {
         
       </Grid>
     </Box>
+    <Footer/>
         </div>
     );
    
