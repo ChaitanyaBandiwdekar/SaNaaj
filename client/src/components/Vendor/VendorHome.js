@@ -230,7 +230,7 @@ function VendorHome(props) {
      )
      console.log(list1);
      setConsumerlist(list1)
-      }, 500);
+      }, 1000);
       console.log(list);
       setConsumers(list);
 

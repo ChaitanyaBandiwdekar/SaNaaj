@@ -314,7 +314,7 @@ function AuthorityHome() {
      setConsumerList(list1);
      setVendorList(list2);
      setallcomplaintslist(list3)
-    }, 1000);
+    }, 2000);
   }, []);
 
   // const toggleBlacklist = async function (vendor) {
