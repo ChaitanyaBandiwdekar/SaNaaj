@@ -21,7 +21,7 @@ import { Card, CardActionArea, CardMedia, CardContent, Grid  } from "@mui/materi
 import { useState, useEffect } from 'react';
 import Sanaaj from "../../contracts/Sanaaj.json";
 import getWeb3 from "../../getWeb3";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
@@ -33,6 +33,7 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import HomeIcon from '@mui/icons-material/Home';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import Modal from '@mui/material/Modal';
+
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 function AuthorityHome() {
@@ -180,7 +181,13 @@ function AuthorityHome() {
 
   };
 
+  let navigate = useNavigate();
+  const location = useLocation();
   useEffect(async () => {
+    if(location.state == null){
+      navigate('/login-authority');
+    }
+
     const reloadCount = sessionStorage.getItem('reloadCount');
     if(reloadCount < 2) {
       sessionStorage.setItem('reloadCount', String(reloadCount + 1));
