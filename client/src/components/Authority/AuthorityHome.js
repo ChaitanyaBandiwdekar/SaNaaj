@@ -44,7 +44,7 @@ import Select from '@mui/material/Select';
 
 
 import {collection, query, orderBy, onSnapshot} from "firebase/firestore"
-import { doc, setDoc, updateDoc  } from "firebase/firestore"; 
+import { doc, setDoc, updateDoc, getDoc  } from "firebase/firestore"; 
 
 import {db} from '../../Firebase';
 
@@ -230,10 +230,34 @@ function AuthorityHome() {
   const handleBlackList=async(event)=>{
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const v_id=parseInt(event.target.vId.value);
-    await contract.methods.blacklist(v_id).send({from: accounts[0]});
-    console.log('success');
-    alert('Vendor status updated!');
+    const v_id=event.target.vId.value;
+    // await contract.methods.blacklist(v_id).send({from: accounts[0]});
+    const vendorDocRef = doc(db, "vendor", v_id);
+    const vendordocSnap = await getDoc(vendorDocRef);
+    
+
+      let vendor1;
+      if (vendordocSnap.exists()) {
+        vendor1 = vendordocSnap.data();
+      }
+      
+      
+
+      try{
+        await updateDoc(vendorDocRef, {
+          isBlacklisted: !vendor1.isBlacklisted,
+          
+          
+        })
+        alert('Updated Vendor Status!');
+        handleClose6()
+        
+      } 
+     
+        catch (err) {
+        alert(err)
+      }
+
 
   }
   const handleCardType=async(event)=>{
@@ -785,16 +809,7 @@ function AuthorityHome() {
               
               autoFocus
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="isBlacklisted"
-              label="Blacklisted(true/false)"
-              name="isBlacklisted"
-              
-              autoFocus
-            />
+            
             <TextField
               margin="normal"
               required
