@@ -42,9 +42,12 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
+
 import {collection, query, orderBy, onSnapshot} from "firebase/firestore"
-import { doc, setDoc } from "firebase/firestore"; 
-import {db} from '../../Firebase'
+import { doc, setDoc, updateDoc, getDoc  } from "firebase/firestore"; 
+
+import {db} from '../../Firebase';
+
 
 
 function AuthorityHome() {
@@ -235,25 +238,60 @@ function AuthorityHome() {
   const handleBlackList=async(event)=>{
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const v_id=parseInt(event.target.vId.value);
-    await contract.methods.blacklist(v_id).send({from: accounts[0]});
-    console.log('success');
-    alert('Vendor status updated!');
+    const v_id=event.target.vId.value;
+    // await contract.methods.blacklist(v_id).send({from: accounts[0]});
+    const vendorDocRef = doc(db, "vendor", v_id);
+    const vendordocSnap = await getDoc(vendorDocRef);
+    
+
+      let vendor1;
+      if (vendordocSnap.exists()) {
+        vendor1 = vendordocSnap.data();
+      }
+      
+      
+
+      try{
+        await updateDoc(vendorDocRef, {
+          isBlacklisted: !vendor1.isBlacklisted,
+          
+          
+        })
+        alert('Updated Vendor Status!');
+        handleClose6()
+        
+      } 
+     
+        catch (err) {
+        alert(err)
+      }
+
 
   }
   const handleCardType=async(event)=>{
     event.preventDefault();
     const c_id=event.target.C_id.value;
     const newcardtype=event.target.card_type.value;
-    const consumer=await contract.methods.getConsumer(c_id).call();
-    if(consumer[1]==newcardtype){
-      alert('Already same card type!');
-
-    }
-    else{
-      await contract.methods.updateCardType(c_id,newcardtype).send({from:accounts[0]});
+    const taskDocRef = doc(db, 'consumer', c_id)
+    // const consumer=await contract.methods.getConsumer(c_id).call();
+    try{
+      await updateDoc(taskDocRef, {
+        ration_card_type: newcardtype,
+        
+      })
       alert('Updated card type!');
+      handleClose7()
+    } catch (err) {
+      alert(err)
     }
+    // if(consumer[1]==newcardtype){
+    //   alert('Already same card type!');
+
+    // }
+    // else{
+    //   await contract.methods.updateCardType(c_id,newcardtype).send({from:accounts[0]});
+    //   alert('Updated card type!');
+    // }
   }
   const handleLogout=(event)=>{
     return navigate("/");
@@ -747,16 +785,7 @@ function AuthorityHome() {
               
               autoFocus
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="isBlacklisted"
-              label="Blacklisted(true/false)"
-              name="isBlacklisted"
-              
-              autoFocus
-            />
+            
             <TextField
               margin="normal"
               required
