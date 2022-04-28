@@ -43,6 +43,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
 import {collection, query, orderBy, onSnapshot} from "firebase/firestore"
+import { doc, setDoc } from "firebase/firestore"; 
 import {db} from '../../Firebase'
 
 
@@ -110,30 +111,47 @@ function AuthorityHome() {
     const ration_card_type=parseInt(event.target.ration_card_type.value);
     const first_name=event.target.first_name.value;
     const last_name=event.target.last_name.value;
-    const adults=event.target.adults.value;
-    const children=event.target.children.value;
+    const adults=parseInt(event.target.adults.value);
+    const children=parseInt(event.target.children.value);
     const phone=event.target.phone.value;
    const location=event.target.location.value;
        const vendor_id=parseInt(event.target.vendor_id.value);
-    const password=event.target.password.value; 
-       const wallet_addr=event.target.wallet_addr.value;
+    const password=event.target.password.value;        
     console.log(contract);
     console.log(ration_card);
     console.log('here')
-    await contract.methods.addConsumer(ration_card,
-      ration_card_type,
-      first_name,
-      last_name,
-      phone,
-      location,
-      vendor_id,
-      password,
-      wallet_addr,
-      adults,
-      children).send({from: accounts[0]})
-    alert("New Consumer is added");
-    console.log('We here');
-    handleClose1();
+    // await contract.methods.addConsumer(ration_card,
+    //   ration_card_type,
+    //   first_name,
+    //   last_name,
+    //   phone,
+    //   location,
+    //   vendor_id,
+    //   password,
+    //   wallet_addr,
+    //   adults,
+    //   children).send({from: accounts[0]})
+    try {
+      await setDoc(doc(db, "consumer", ration_card),{
+        ration_card:ration_card,
+          ration_card_type:ration_card_type,
+          first_name:first_name,
+          last_name:last_name,
+          phone:phone,
+          location:location,
+          vendor_id:vendor_id,
+          password:password,
+          adults:adults,
+          children:children
+      })
+      alert("New Consumer is added")
+    console.log('We here')
+    handleClose1()
+    } catch (err) {
+      alert(err)
+    }
+    
+    
     
     
   }
@@ -147,20 +165,38 @@ function AuthorityHome() {
     const location=event.target.Location.value;
     const vendor_id=parseInt(event.target.vendor_Id.value);
     const password=event.target.Password.value; 
-    const wallet_addr=event.target.wallet_Addr.value;
+    const wallet_addr=event.target.wallet_addr.value;
     console.log(contract);
     console.log(vendor_id);
     console.log('here')
-    await contract.methods.addVendor(vendor_id,
-      first_name,
-      last_name,
-      phone,
-      location,
-      password,
-      isBlacklisted,
-      wallet_addr).send({from: accounts[0]})
-    alert("New Vendor is added");
-    handleClose2();
+    // await contract.methods.addVendor(vendor_id,
+    //   first_name,
+    //   last_name,
+    //   phone,
+    //   location,
+    //   password,
+    //   isBlacklisted,
+    //   wallet_addr).send({from: accounts[0]})
+    // alert("New Vendor is added");
+    // handleClose2();
+
+    try {
+      await setDoc(doc(db, "vendor", vendor_id),{
+        vendor_id:vendor_id,
+      first_name:first_name,
+      last_name:last_name,
+      phone:phone,
+      location:location,
+      password:password,
+    //   isBlacklisted,
+    //   wallet_addr
+      })
+      alert("New Vendor is added")
+    console.log('We here')
+    handleClose2()
+    } catch (err) {
+      alert(err)
+    }
     
     
     
@@ -269,9 +305,10 @@ function AuthorityHome() {
       })))
     })
 
-    console.log(complaitList);
+    
     let allcomplaints = complaitList;
     // setComplaitList(allcomplaints);
+    console.log(allcomplaints);
 
 
     allconsumers.forEach(async (element) => {
@@ -358,7 +395,7 @@ function AuthorityHome() {
                     <h5 style={{backgoundColor: "#DDAA00"}}></h5>
                   </Grid>
                   <Grid item fullWidth>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Ration ID : {complaint[0]}</h5>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>Ration ID : {complaint.data.ration_id}</h5>
                   </Grid>
                   {/* <Grid item fullWidth>
                     <h5 style={{backgoundColor: "#DDAA00"}}>VendorId : {complaint[1]}</h5>
@@ -367,10 +404,10 @@ function AuthorityHome() {
                     <h5 style={{backgoundColor: "#DDAA00"}}>CardType: {getColor(consumer[1])}</h5>
                   </Grid> */}
                   <Grid item fullWidth>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Description: {complaint[2]}</h5>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>Description: {complaint.data.complaint_content}</h5>
                   </Grid>
                   <Grid item fullWidth>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Time : {complaint[3]}</h5>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>Time : {complaint.data.time}</h5>
                   </Grid>
                   <Grid item xs={7}>
                   {/* <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"black", fontSize: 'small' }} onClick={() => toggleBlacklist(vendor)}>{vendor[6] ? 'Unblacklist': 'Blacklist'} </Button> */}
@@ -590,16 +627,7 @@ function AuthorityHome() {
               
               autoFocus
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="wallet_addr"
-              label="Wallet Address for consumer"
-              name="wallet_addr"
-              
-              autoFocus
-            />
+            
             {/* <TextField
               margin="normal"
               required
@@ -808,10 +836,50 @@ function AuthorityHome() {
             Complains
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-          {allcomplaintslist}
+          {complaitList.map((complaint,index) =>
+        <div>
+            <Card sx={{ minWidth: 275, padding: 1, margin: 1, }}>
+              <CardContent sx={{paddingX: 0 }}>
+              <Grid container spacing={1} columns={16} style={{fontFamily: 'Montserrat'}}>
+              <Grid item fullWidth>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>Complain Number : {index+1}</h5>
+                  </Grid>
+                  <Grid item fullWidth>
+                    <h5 style={{backgoundColor: "#DDAA00"}}></h5>
+                  </Grid>
+                  <Grid item fullWidth>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>Ration ID : {complaint.data.ration_id}</h5>
+                  </Grid>
+                  {/* <Grid item fullWidth>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>VendorId : {complaint[1]}</h5>
+                  </Grid> */}
+                  {/* <Grid item xs={7}>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>CardType: {getColor(consumer[1])}</h5>
+                  </Grid> */}
+                  <Grid item fullWidth>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>Description: {complaint.data.complaint_content}</h5>
+                  </Grid>
+                  <Grid item fullWidth>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>Time : {complaint.data.time}</h5>
+                  </Grid>
+                  <Grid item xs={7}>
+                  {/* <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"black", fontSize: 'small' }} onClick={() => toggleBlacklist(vendor)}>{vendor[6] ? 'Unblacklist': 'Blacklist'} </Button> */}
+                  </Grid>
+                </Grid>
+              </CardContent>
+          </Card> 
+          <hr></hr>
+          </div>                    
+     )}
             
           </Typography>
         </Box>
+
+        {/* <div className='taskManager__tasks'>
+                {complaitList.map((c) => (
+                  <h1>{c.data.complaint_content}</h1>
+                ))}
+        </div> */}
       </Modal>
       
           <Modal

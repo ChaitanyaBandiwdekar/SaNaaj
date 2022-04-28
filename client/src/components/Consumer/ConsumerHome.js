@@ -44,6 +44,8 @@ import GrainIcon from '@mui/icons-material/Grain';
 import SanitizerIcon from '@mui/icons-material/Sanitizer';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import GrassIcon from '@mui/icons-material/Grass';
+import {db} from '../../Firebase'
+import {collection, addDoc, Timestamp} from 'firebase/firestore'
 
 function ConsumerHome(props) {
     const [web3, setWeb3] = useState(null);
@@ -94,10 +96,23 @@ function ConsumerHome(props) {
     const data = new FormData(event.currentTarget);
     const complaint1=data.get('complaint');
     console.log(contract);
-    await contract.methods.addComplaint(consumer[0],consumer[6],complaint1,getCurrentDateTime()).send({from: accounts[0]})
+    // await contract.methods.addComplaint(consumer[0],consumer[6],complaint1,getCurrentDateTime()).send({from: accounts[0]})
+    try {
+      await addDoc(collection(db, 'complaint'), {
+        ration_id: consumer[0],
+        vendor_id: consumer[6],
+        complaint_content: complaint1,
+        time: getCurrentDateTime()
+      })
+      alert("Your complaint is submitted.")
+      console.log('We here')
+    handleClose()
+    } catch (err) {
+      alert(err)
+    }
     alert("Your complaint is submitted.");
     console.log('We here');
-    handleClose();
+    // handleClose();
     
     
   }
