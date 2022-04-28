@@ -306,9 +306,9 @@ function VendorHome(props) {
       const vendorId=location.state.id
       // console.log(typeof(vendorId));
       // const consumerId=props.consumerId;
-      const stock1 = await instance.methods.getStock(vendorId).call();
-      console.log(stock1);
-      setStock(stock1);
+      // const stock1 = await instance.methods.getStock(vendorId).call();
+      // console.log(stock1);
+      // setStock(stock1);
       // console.log(stock1);
       // const vendor1=await instance.methods.getVendor(vendorId).call();
 
@@ -329,6 +329,15 @@ function VendorHome(props) {
             data: doc.data()
           })))
         })
+
+        const stockDocRef = doc(db, "stock", vendorId);
+        const stockdocSnap = await getDoc(stockDocRef);
+
+        let stock1;
+        if (stockdocSnap.exists()) {
+          stock1 = stockdocSnap.data();
+        }
+        setStock(stock1);
       // let allconsumers = await instance.methods.getAllConsumers().call();
       // console.log(allconsumers);
       let list = []
@@ -445,7 +454,7 @@ function VendorHome(props) {
                           </CardContent>
                         </Card>                        
                       <Button  sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' } }} fullWidth onClick={handleOpen}>Update Allowance</Button>
-                      <Button  sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' } }} fullWidth onClick={handleBlockSubmit}>Push to Blockchain</Button>
+                      <Button  sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' }, marginTop:3 }} fullWidth onClick={handleBlockSubmit}>Push to Blockchain</Button>
                       <Button  sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#991B16", "&:hover":{backgroundColor: "#8B0000", boxShadow:9, borderColor:'white' }, marginTop:3 }} fullWidth onClick={handleLogout}>Logout</Button>
                         
                         </div>
@@ -635,10 +644,10 @@ function VendorHome(props) {
                           <CardContent>
                             <p style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10", fontSize: 20, fontWeight:"bold"}}> <GradingIcon style={{fontSize:30, }}></GradingIcon>Current Stock</p>
                               <br></br><hr></hr><br></br>
-                              <GrainIcon sx={{ position: 'relative', top: 5}}/>  Rice: {stock[0]} <br></br> <br></br>
-                              <GrassIcon sx={{ position: 'relative', top: 5}}/>Wheat: {stock[1]} <br></br> <br></br>
-                              <HourglassBottomIcon sx={{ position: 'relative', top: 5}}/>  Sugar: {stock[2]} <br></br> <br></br>
-                              <SanitizerIcon sx={{ position: 'relative', top: 5}}/> Kerosene:  {stock[3]}<br></br> <br></br>
+                              <GrainIcon sx={{ position: 'relative', top: 5}}/>  Rice: {stock.rice} <br></br> <br></br>
+                              <GrassIcon sx={{ position: 'relative', top: 5}}/>Wheat: {stock.wheat} <br></br> <br></br>
+                              <HourglassBottomIcon sx={{ position: 'relative', top: 5}}/>  Sugar: {stock.sugar} <br></br> <br></br>
+                              <SanitizerIcon sx={{ position: 'relative', top: 5}}/> Kerosene:  {stock.kerosene}<br></br> <br></br>
                               </CardContent>
                               </Card>
 

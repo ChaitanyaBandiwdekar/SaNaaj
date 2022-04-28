@@ -57,6 +57,7 @@ function ConsumerHome(props) {
     const [transactions, setTransactions] = useState([]);
     const [transactionlist, setTransactionlist] = useState([]);
     const [consumer, setConsumer] = useState([]);
+   
     const [color, setColor] = useState("black");
     const [colorname, setColorname] = useState("black");
     const [complaint,setComplaint]=useState("")
@@ -169,8 +170,8 @@ function ConsumerHome(props) {
       setAccounts(accounts);
       setContract(instance);
       const consumerId=location.state.id
-      const allowance1 = await instance.methods.getAllowance(consumerId).call();
-      setAllowance(allowance1);
+      // const allowance1 = await instance.methods.getAllowance(consumerId).call();
+      // setAllowance(allowance1);
 
       const consumerDocRef = doc(db, "consumer", consumerId);
       const consumerdocSnap = await getDoc(consumerDocRef);
@@ -179,6 +180,14 @@ function ConsumerHome(props) {
       if (consumerdocSnap.exists()) {
         consumer1 = consumerdocSnap.data();
         console.log(consumer1);
+      }
+      const allowanceDocRef = doc(db, "allowance", consumerId);
+      const allowancedocSnap = await getDoc(allowanceDocRef);
+
+      let allowance1;
+      if (allowancedocSnap.exists()) {
+        allowance1 = allowancedocSnap.data();
+        console.log(allowance1);
       }
 
       // const consumer1=await instance.methods.getConsumer(consumerId).call();
@@ -457,10 +466,10 @@ function ConsumerHome(props) {
                           <CardContent>
                             <p style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10", fontSize: 20, fontWeight:"bold"}}> <GradingIcon style={{fontSize:30, }}></GradingIcon>My Allowance</p>
                               <br></br><hr></hr><br></br>
-                              <GrainIcon sx={{ position: 'relative', top: 5}}/>  Rice: {allowance[0]} <br></br> <br></br>
-                              <GrassIcon sx={{ position: 'relative', top: 5}}/>Wheat: {allowance[1]} <br></br> <br></br>
-                              <HourglassBottomIcon sx={{ position: 'relative', top: 5}}/>  Sugar: {allowance[2]} <br></br> <br></br>
-                              <SanitizerIcon sx={{ position: 'relative', top: 5}}/> Kerosene:  {allowance[3]}<br></br> <br></br>
+                              <GrainIcon sx={{ position: 'relative', top: 5}}/>  Rice: {allowance.rice} <br></br> <br></br>
+                              <GrassIcon sx={{ position: 'relative', top: 5}}/>Wheat: {allowance.wheat} <br></br> <br></br>
+                              <HourglassBottomIcon sx={{ position: 'relative', top: 5}}/>  Sugar: {allowance.sugar} <br></br> <br></br>
+                              <SanitizerIcon sx={{ position: 'relative', top: 5}}/> Kerosene:  {allowance.kerosene}<br></br> <br></br>
                               </CardContent>
                               </Card>
                         {/* <IconButton ><AccountCircleIcon style={{color:"#351E10", fontSize:90}}></AccountCircleIcon> </IconButton> */}
