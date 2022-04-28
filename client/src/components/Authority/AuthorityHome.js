@@ -83,6 +83,14 @@ function AuthorityHome() {
       return "green";
     }
   };
+  function getBlacklisted(isBlacklisted){
+    if(isBlacklisted){
+      return "Yes";
+    }
+    else{
+      return "No";
+    }
+  };
   const [open1, setOpen1] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
   const [open3, setOpen3] = React.useState(false);
@@ -295,8 +303,8 @@ function AuthorityHome() {
     setAccounts(accounts);
     setContract(instance);
 
-    let allconsumers = await instance.methods.getAllConsumers().call();
-    let allvendors = await instance.methods.getAllVendors().call();
+    // let allconsumers = await instance.methods.getAllConsumers().call();
+    // let allvendors = await instance.methods.getAllVendors().call();
     let list = []
     let vlist = []
     // let allcomplaints= await instance.methods.getAllComplaints().call();
@@ -309,124 +317,43 @@ function AuthorityHome() {
       })))
     })
 
+    // let allconsumers = [];
+
+    const c = query(collection(db, 'consumer'))
+    onSnapshot(c, (querySnapshot) => {
+      setConsumerList(querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        data: doc.data()
+      })))
+    })
+
+    const v = query(collection(db, 'vendor'))
+    onSnapshot(v, (querySnapshot) => {
+      setVendorList(querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        data: doc.data()
+      })))
+    })
+
+
     
     let allcomplaints = complaitList;
     // setComplaitList(allcomplaints);
     console.log(allcomplaints);
 
 
-    allconsumers.forEach(async (element) => {
-      let c = await instance.methods.getConsumer(element).call();
-      list.push(c);
-    });
+    // allconsumers.forEach(async (element) => {
+    //   let c = await instance.methods.getConsumer(element).call();
+    //   list.push(c);
+    // });
 
-    allvendors.forEach(async (element) => {
-      let v = await instance.methods.getVendor(element).call();
-      vlist.push(v);
-    });
-    function getBlacklisted(isBlacklisted){
-      if(isBlacklisted){
-        return "Yes";
-      }
-      else{
-        return "No";
-      }
-    };
+    // allvendors.forEach(async (element) => {
+    //   let v = await instance.methods.getVendor(element).call();
+    //   vlist.push(v);
+    // });
+    
 
-    setTimeout(() => {
-      console.log(vlist);
-      const list1 = list.map((consumer,index) =>
-        <div>
-            <Card sx={{ minWidth: 275, padding: 1, margin: 1, backgroundColor:"#DDAA00"}}>
-              <CardContent sx={{paddingX: 0 }}>
-              <Grid container spacing={1} columns={16} style={{fontFamily: 'Montserrat'}}>
-                  <Grid item xs={8}>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Name : {consumer[2]} {consumer[3]}</h5>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>ConsumerId : {consumer[0]}</h5>
-                  </Grid>
-                  <Grid item xs={7}>
-                    
-                    <h5 style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10"}}>CardType: {getColor(consumer[1])}   <RectangleIcon style={{color:getColorName(consumer[1])}}></RectangleIcon> </h5>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Phone: {consumer[4]}</h5>
-                  </Grid>
-                </Grid>
-              </CardContent>
-          </Card> 
-          <hr></hr>
-          </div>                    
-     );
 
-     const list2 = vlist.map((vendor,index) =>
-        <div>
-            <Card sx={{ minWidth: 275, padding: 1, margin: 1, backgroundColor:"#DDAA00"}}>
-              <CardContent sx={{paddingX: 0 }}>
-              <Grid container spacing={1} columns={16} style={{fontFamily: 'Montserrat'}}>
-                  <Grid item xs={8}>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Name : {vendor[1]} {vendor[2]}</h5>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>VendorId : {vendor[0]}</h5>
-                  </Grid>
-                  {/* <Grid item xs={7}>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>CardType: {getColor(consumer[1])}</h5>
-                  </Grid> */}
-                  <Grid item xs={8}>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Phone: {vendor[3]}</h5>
-                  </Grid>
-                  <Grid item xs={8}>
-                  {/* <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"black", fontSize: 'small' }} onClick={() => toggleBlacklist(vendor)}>{vendor[6] ? 'Unblacklist': 'Blacklist'} </Button> */}
-                  <h5 style={{backgoundColor: "#DDAA00"}}>Blacklisted : {getBlacklisted(vendor[6])}</h5>
-                  </Grid>
-                </Grid>
-              </CardContent>
-          </Card> 
-          <hr></hr>
-          </div>                    
-     );
-     const list3 = allcomplaints.map((complaint,index) =>
-        <div>
-            <Card sx={{ minWidth: 275, padding: 1, margin: 1, }}>
-              <CardContent sx={{paddingX: 0 }}>
-              <Grid container spacing={1} columns={16} style={{fontFamily: 'Montserrat'}}>
-              <Grid item fullWidth>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Complain Number : {index+1}</h5>
-                  </Grid>
-                  <Grid item fullWidth>
-                    <h5 style={{backgoundColor: "#DDAA00"}}></h5>
-                  </Grid>
-                  <Grid item fullWidth>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Ration ID : {complaint.data.ration_id}</h5>
-                  </Grid>
-                  {/* <Grid item fullWidth>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>VendorId : {complaint[1]}</h5>
-                  </Grid> */}
-                  {/* <Grid item xs={7}>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>CardType: {getColor(consumer[1])}</h5>
-                  </Grid> */}
-                  <Grid item fullWidth>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Description: {complaint.data.complaint_content}</h5>
-                  </Grid>
-                  <Grid item fullWidth>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Time : {complaint.data.time}</h5>
-                  </Grid>
-                  <Grid item xs={7}>
-                  {/* <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"black", fontSize: 'small' }} onClick={() => toggleBlacklist(vendor)}>{vendor[6] ? 'Unblacklist': 'Blacklist'} </Button> */}
-                  </Grid>
-                </Grid>
-              </CardContent>
-          </Card> 
-          <hr></hr>
-          </div>                    
-     );
-
-     setConsumerList(list1);
-     setVendorList(list2);
-     setallcomplaintslist(list3)
-    }, 2000);
   }, []);
 
   // const toggleBlacklist = async function (vendor) {
@@ -452,7 +379,30 @@ function AuthorityHome() {
                 Consumer List
               </Typography>
               <List sx={{ maxHeight: '65vh', overflowY: 'scroll'}} className="scroll">
-                {consumerList}
+                {consumerList.map((consumer,index) =>
+        <div>
+            <Card sx={{ minWidth: 275, padding: 1, margin: 1, backgroundColor:"#DDAA00"}}>
+              <CardContent sx={{paddingX: 0 }}>
+              <Grid container spacing={1} columns={16} style={{fontFamily: 'Montserrat'}}>
+                  <Grid item xs={8}>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>Name : {consumer.data.first_name} {consumer.data.last_name}</h5>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>ConsumerId : {consumer.data.ration_card}</h5>
+                  </Grid>
+                  <Grid item xs={7}>
+                    
+                    <h5 style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10"}}>CardType: {getColor(consumer.data.ration_card_type)}   <RectangleIcon style={{color:getColorName(consumer.data.ration_card_type)}}></RectangleIcon> </h5>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>Phone: {consumer.data.phone}</h5>
+                  </Grid>
+                </Grid>
+              </CardContent>
+          </Card> 
+          <hr></hr>
+          </div>                    
+     )}
               </List>
               
             </CardContent>
@@ -465,7 +415,33 @@ function AuthorityHome() {
                 Vendor List
               </Typography>
               <List sx={{ maxHeight: '65vh', overflowY: 'scroll'}} className="scroll">
-                {vendorList}
+                {vendorList.map((vendor,index) =>
+        <div>
+            <Card sx={{ minWidth: 275, padding: 1, margin: 1, backgroundColor:"#DDAA00"}}>
+              <CardContent sx={{paddingX: 0 }}>
+              <Grid container spacing={1} columns={16} style={{fontFamily: 'Montserrat'}}>
+                  <Grid item xs={8}>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>Name : {vendor.data.first_name} {vendor.data.last_name}</h5>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>VendorId : {vendor.data.vendor_id}</h5>
+                  </Grid>
+                  {/* <Grid item xs={7}>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>CardType: {getColor(consumer[1])}</h5>
+                  </Grid> */}
+                  <Grid item xs={8}>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>Phone: {vendor.data.phone}</h5>
+                  </Grid>
+                  <Grid item xs={8}>
+                  {/* <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"black", fontSize: 'small' }} onClick={() => toggleBlacklist(vendor)}>{vendor[6] ? 'Unblacklist': 'Blacklist'} </Button> */}
+                  <h5 style={{backgoundColor: "#DDAA00"}}>Blacklisted : {getBlacklisted(vendor.data.isBlacklisted)}</h5>
+                  </Grid>
+                </Grid>
+              </CardContent>
+          </Card> 
+          <hr></hr>
+          </div>                    
+     )}
               </List>
               
             </CardContent>
