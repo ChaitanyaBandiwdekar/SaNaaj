@@ -41,6 +41,11 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+
+import {collection, query, orderBy, onSnapshot} from "firebase/firestore"
+import {db} from '../../Firebase'
+
+
 function AuthorityHome() {
   const [web3, setWeb3] = useState(null);
   const [accounts, setAccounts] = useState(null);
@@ -254,9 +259,19 @@ function AuthorityHome() {
     let allvendors = await instance.methods.getAllVendors().call();
     let list = []
     let vlist = []
-    let allcomplaints= await instance.methods.getAllComplaints().call();
-    console.log(allcomplaints)
-    setComplaitList(allcomplaints);
+    // let allcomplaints= await instance.methods.getAllComplaints().call();
+
+    const q = query(collection(db, 'complaint'), orderBy('time', 'desc'))
+    onSnapshot(q, (querySnapshot) => {
+      setComplaitList(querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        data: doc.data()
+      })))
+    })
+
+    console.log(complaitList);
+    let allcomplaints = complaitList;
+    // setComplaitList(allcomplaints);
 
 
     allconsumers.forEach(async (element) => {
@@ -940,7 +955,7 @@ function AuthorityHome() {
       </Modal>
       <br></br><br></br><hr></hr>
       <Button sx={{ border: 1,borderColor: '#351E10', color:"white", marginTop: 3,backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' } }} onClick={handleOpen7} fullWidth>Update Consumer's Card type</Button>
-      <Button  sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' }, marginTop:3 }} fullWidth onClick={handleLogout}>Logout</Button>
+      <Button  sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#991B16", "&:hover":{backgroundColor: "#8B0000", boxShadow:9, borderColor:'white' }, marginTop:3 }} fullWidth onClick={handleLogout}>Logout</Button>
 
                
 
