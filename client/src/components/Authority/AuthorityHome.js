@@ -42,9 +42,12 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
+
 import {collection, query, orderBy, onSnapshot} from "firebase/firestore"
-import { doc, setDoc } from "firebase/firestore"; 
-import {db} from '../../Firebase'
+import { doc, setDoc, updateDoc  } from "firebase/firestore"; 
+
+import {db} from '../../Firebase';
+
 
 
 function AuthorityHome() {
@@ -233,15 +236,26 @@ function AuthorityHome() {
     event.preventDefault();
     const c_id=event.target.C_id.value;
     const newcardtype=event.target.card_type.value;
-    const consumer=await contract.methods.getConsumer(c_id).call();
-    if(consumer[1]==newcardtype){
-      alert('Already same card type!');
-
-    }
-    else{
-      await contract.methods.updateCardType(c_id,newcardtype).send({from:accounts[0]});
+    const taskDocRef = doc(db, 'consumer', c_id)
+    // const consumer=await contract.methods.getConsumer(c_id).call();
+    try{
+      await updateDoc(taskDocRef, {
+        ration_card_type: newcardtype,
+        
+      })
       alert('Updated card type!');
+      handleClose7()
+    } catch (err) {
+      alert(err)
     }
+    // if(consumer[1]==newcardtype){
+    //   alert('Already same card type!');
+
+    // }
+    // else{
+    //   await contract.methods.updateCardType(c_id,newcardtype).send({from:accounts[0]});
+    //   alert('Updated card type!');
+    // }
   }
   const handleLogout=(event)=>{
     return navigate("/");
