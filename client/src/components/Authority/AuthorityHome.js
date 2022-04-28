@@ -133,6 +133,26 @@ function AuthorityHome() {
     console.log(SHA256(password).toString());      
     console.log(contract);
     console.log(ration_card);
+
+    let rice,wheat,kerosene,sugar=0;
+    if(ration_card_type==1){
+      rice=(adults+children)*5;
+      wheat=(adults+children)*5;
+      sugar=(adults+children)*1;
+      kerosene=(adults+children)*5;
+    }
+    else if(ration_card_type==2){
+      rice=(adults+children)*6;
+      wheat=(adults+children)*6;
+      sugar=(adults+children)*1;
+      kerosene=(adults+children)*6;
+    }
+    else {
+      rice=(adults+children)*7;
+      wheat=(adults+children)*7;
+      sugar=(adults+children)*2;
+      kerosene=(adults+children)*7;
+    }
     // console.log(password.toString());
     console.log('here')
     // await contract.methods.addConsumer(ration_card,
@@ -159,12 +179,20 @@ function AuthorityHome() {
           adults:adults,
           children:children
       })
+      await setDoc(doc(db, "allowance", ration_card),{
+        rice:rice,
+        wheat:wheat,
+        sugar:sugar,
+        kerosene:kerosene
+      })
       alert("New Consumer is added")
     console.log('We here')
     handleClose1()
     } catch (err) {
       alert(err)
     }
+
+    
     
     
     
@@ -208,9 +236,15 @@ function AuthorityHome() {
       isBlacklisted:isBlacklisted,
       wallet_addr:wallet_addr
       })
+      await setDoc(doc(db, "stock", vendor_id),{
+        rice:500,
+        wheat:500,
+        sugar:100,
+        kerosene:700
+      })
       alert("New Vendor is added")
     console.log('We here')
-    // handleClose2()
+    handleClose2()
     } catch (err) {
       console.log(err)
     }

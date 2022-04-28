@@ -120,7 +120,7 @@ function VendorLogin() {
               setPassErr(false)
               if(accounts[0] == vendor.wallet_addr){
                 setAddrErr(false)
-                navigate('/vendor-home', {state:{id:parseInt(data.get('id'))}});
+                navigate('/vendor-home', {state:{id:data.get('id')}});
               }
               else{
                 setAddrErr(true);
