@@ -44,7 +44,7 @@ import Select from '@mui/material/Select';
 
 
 import {collection, query, orderBy, onSnapshot} from "firebase/firestore"
-import { doc, setDoc, updateDoc, getDoc  } from "firebase/firestore"; 
+import { doc, setDoc, updateDoc, getDoc, writeBatch, getDocs  } from "firebase/firestore"; 
 
 import {db} from '../../Firebase';
 
@@ -191,11 +191,6 @@ function AuthorityHome() {
     } catch (err) {
       alert(err)
     }
-
-    
-    
-    
-    
     
   }
   const handleAddVendor= async (event)=>{
@@ -279,22 +274,37 @@ function AuthorityHome() {
 
   const refillAll=async(event)=>{
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const a = query(collection(db, 'stock'))
-    onSnapshot(a, (querySnapshot) => {
-      querySnapshot.forEach(function(doc) {
-        doc.ref.update({
-          rice:500,
-          wheat:500,
-          sugar:100,
-          kerosene:700
-        });
-    });
-    })
-    
-    
-    
 
+    let q = query(collection(db, "allowance"));
+    let querySnapshot = await getDocs(q);
+    querySnapshot.forEach(async (doc1) => {
+      const consumerDocRef = doc(db, "consumer", doc1.id);
+      const consumerdocSnap = await getDoc(consumerDocRef);
+      let consumer = consumerdocSnap.data();
+      let adults = consumer.adults;
+      let children = consumer.children;
+      console.log(consumer);
+      if(consumer.ration_card_type == 1){
+        //batch.update(doc1.ref, {"rice": (adults+children)*5, "wheat": (adults+children)*5, "sugar": (adults+children)*1, "kerosene": (adults+children)*5});
+        await updateDoc(doc1.ref, {"rice": (adults+children)*5, "wheat": (adults+children)*5, "sugar": (adults+children)*1, "kerosene": (adults+children)*5});
+      }
+      else if(consumer.ration_card_type == 2){
+        await updateDoc(doc1.ref, {"rice": (adults+children)*6, "wheat": (adults+children)*6, "sugar": (adults+children)*1, "kerosene": (adults+children)*6});
+      }
+      else{
+        await updateDoc(doc1.ref, {"rice": (adults+children)*7, "wheat": (adults+children)*7, "sugar": (adults+children)*2, "kerosene": (adults+children)*7});
+      }
+      
+    });
+
+    let batch1 = writeBatch(db);
+    q = query(collection(db, "stock"));
+    querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      batch1.update(doc.ref, {"rice": 500, "wheat": 500, "sugar": 100, "kerosene": 700});
+    });
+
+    await batch1.commit();
   }
 
 
