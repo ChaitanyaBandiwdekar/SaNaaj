@@ -231,12 +231,12 @@ contract Sanaaj {
         }
     }
 
-    function getTransactions(string memory _ration)
+    function getTransactions(uint256 vendor_id)
         public
         view
-        returns (AssetLibrary.Transaction[] memory)
+        returns (string[] memory)
     {
-        return transactionList[_ration];
+        return newTransactionList[vendor_id];
     }
 
     // function refillAllowance(string memory _ration) public {
