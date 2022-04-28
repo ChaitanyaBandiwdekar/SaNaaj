@@ -304,7 +304,13 @@ function AuthorityHome() {
       batch1.update(doc.ref, {"rice": 500, "wheat": 500, "sugar": 100, "kerosene": 700});
     });
 
-    await batch1.commit();
+    try{
+      await batch1.commit();
+      alert("All allowances and stocks refilled successfully!");
+    }
+    catch{
+      alert("Refill failed!");
+    }
   }
 
 

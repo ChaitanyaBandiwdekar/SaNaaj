@@ -192,6 +192,7 @@ function ConsumerHome(props) {
 
       // const consumer1=await instance.methods.getConsumer(consumerId).call();
       setConsumer(consumer1)
+      setAllowance(allowance1)
       // const transaction1 = await instance.methods.getTransactions(consumerId).call();
       
       const q = query(collection(db, 'transaction'), where("consumer_id", "==", consumerId))
