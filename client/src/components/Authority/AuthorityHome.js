@@ -119,7 +119,9 @@ function AuthorityHome() {
     const phone=event.target.phone.value;
    const location=event.target.location.value;
        const vendor_id=parseInt(event.target.vendor_id.value);
-    const password=event.target.password.value;        
+    const password=event.target.password.value;  
+    var SHA256 = require("crypto-js/sha256");
+    console.log(SHA256(password).toString());      
     console.log(contract);
     console.log(ration_card);
     console.log('here')
@@ -143,7 +145,7 @@ function AuthorityHome() {
           phone:phone,
           location:location,
           vendor_id:vendor_id,
-          password:password,
+          password:SHA256(password).toString(),
           adults:adults,
           children:children
       })
@@ -161,13 +163,15 @@ function AuthorityHome() {
   const handleAddVendor= async (event)=>{
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const  isBlacklisted=event.target. isBlacklisted.value;
+    const  isBlacklisted=false;
     const first_name=event.target.first_Name.value;
     const last_name=event.target.last_Name.value
     const phone=event.target.Phone.value;
     const location=event.target.Location.value;
-    const vendor_id=parseInt(event.target.vendor_Id.value);
-    const password=event.target.Password.value; 
+    const vendor_id=event.target.vendor_Id.value;
+    const password=event.target.Password.value;
+    var SHA256 = require("crypto-js/sha256");
+    console.log(SHA256(password).toString()); 
     const wallet_addr=event.target.wallet_addr.value;
     console.log(contract);
     console.log(vendor_id);
@@ -185,20 +189,20 @@ function AuthorityHome() {
 
     try {
       await setDoc(doc(db, "vendor", vendor_id),{
-        vendor_id:vendor_id,
+        vendor_id:parseInt(vendor_id),
       first_name:first_name,
       last_name:last_name,
       phone:phone,
       location:location,
-      password:password,
-    //   isBlacklisted,
-    //   wallet_addr
+      password:SHA256(password).toString(),
+      isBlacklisted:isBlacklisted,
+      wallet_addr:wallet_addr
       })
       alert("New Vendor is added")
     console.log('We here')
-    handleClose2()
+    // handleClose2()
     } catch (err) {
-      alert(err)
+      console.log(err)
     }
     
     
@@ -795,9 +799,9 @@ function AuthorityHome() {
               margin="normal"
               required
               fullWidth
-              id="wallet_Addr"
+              id="wallet_addr"
               label="Wallet Address for Vendor"
-              name="wallet_Addr"
+              name="wallet_addr"
               
               autoFocus
             />
