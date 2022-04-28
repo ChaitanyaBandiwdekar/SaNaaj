@@ -70,7 +70,7 @@ contract Sanaaj {
             "Mumbai",
             1,
             "0x134563d4e440f0e418b0f382f23a2cf301af6d7f648ccfae9895018345d779a3", //"Hello123"
-            0xFc43ee9441590F044136fC8B225483188a11de92,
+            0x9345BaF04A62F6A91d20aa08121a16eB39308b70,
             2,
             2
         );
@@ -157,7 +157,7 @@ contract Sanaaj {
             "MH9876504321"
         ];
         vendorIDList = [1, 2];
-        adminAddress = 0xfFf0a5E8dA571A7e20c053F4D3c127b0c38C925C;
+        adminAddress = 0x1964F1519FF7ACAa5E6b2462070cB0d6817FbA4E;
     }
 
     function getAdminPassword() public view returns (string memory) {
@@ -264,8 +264,6 @@ contract Sanaaj {
         );
     }
 
-    
-
     function getTransactions(string memory _ration)
         public
         view
@@ -275,24 +273,58 @@ contract Sanaaj {
     }
 
     function refillAllowance(string memory _ration) public {
-        
         if (consumerList[_ration].ration_card_type == 1) {
-            allowanceList[_ration]["Rice"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*5;
-            allowanceList[_ration]["Wheat"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*5;
-            allowanceList[_ration]["Sugar"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*1;
-            allowanceList[_ration]["Kerosene"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*5;
+            allowanceList[_ration]["Rice"] =
+                (consumerList[_ration].num_of_adults +
+                    consumerList[_ration].num_of_children) *
+                5;
+            allowanceList[_ration]["Wheat"] =
+                (consumerList[_ration].num_of_adults +
+                    consumerList[_ration].num_of_children) *
+                5;
+            allowanceList[_ration]["Sugar"] =
+                (consumerList[_ration].num_of_adults +
+                    consumerList[_ration].num_of_children) *
+                1;
+            allowanceList[_ration]["Kerosene"] =
+                (consumerList[_ration].num_of_adults +
+                    consumerList[_ration].num_of_children) *
+                5;
         } else if (consumerList[_ration].ration_card_type == 2) {
-            allowanceList[_ration]["Rice"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*6;
-            allowanceList[_ration]["Wheat"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*6;
-            allowanceList[_ration]["Sugar"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*1;
-            allowanceList[_ration]["Kerosene"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*6;
+            allowanceList[_ration]["Rice"] =
+                (consumerList[_ration].num_of_adults +
+                    consumerList[_ration].num_of_children) *
+                6;
+            allowanceList[_ration]["Wheat"] =
+                (consumerList[_ration].num_of_adults +
+                    consumerList[_ration].num_of_children) *
+                6;
+            allowanceList[_ration]["Sugar"] =
+                (consumerList[_ration].num_of_adults +
+                    consumerList[_ration].num_of_children) *
+                1;
+            allowanceList[_ration]["Kerosene"] =
+                (consumerList[_ration].num_of_adults +
+                    consumerList[_ration].num_of_children) *
+                6;
         } else {
-            allowanceList[_ration]["Rice"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*7;
-            allowanceList[_ration]["Wheat"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*7;
-            allowanceList[_ration]["Sugar"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*2;
-            allowanceList[_ration]["Kerosene"] = (consumerList[_ration].num_of_adults+consumerList[_ration].num_of_children)*7;
+            allowanceList[_ration]["Rice"] =
+                (consumerList[_ration].num_of_adults +
+                    consumerList[_ration].num_of_children) *
+                7;
+            allowanceList[_ration]["Wheat"] =
+                (consumerList[_ration].num_of_adults +
+                    consumerList[_ration].num_of_children) *
+                7;
+            allowanceList[_ration]["Sugar"] =
+                (consumerList[_ration].num_of_adults +
+                    consumerList[_ration].num_of_children) *
+                2;
+            allowanceList[_ration]["Kerosene"] =
+                (consumerList[_ration].num_of_adults +
+                    consumerList[_ration].num_of_children) *
+                7;
         }
-        
     }
 
     function refillStock(uint256 _vendorID) public {
@@ -406,11 +438,7 @@ contract Sanaaj {
         vendorList[vendor_id].password = password1;
     }
 
-    function getAdminAddress()
-        public
-        view 
-        returns(address)
-    {
+    function getAdminAddress() public view returns (address) {
         return adminAddress;
     }
 
