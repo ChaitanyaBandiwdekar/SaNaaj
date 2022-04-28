@@ -133,6 +133,26 @@ function AuthorityHome() {
     console.log(SHA256(password).toString());      
     console.log(contract);
     console.log(ration_card);
+
+    let rice,wheat,kerosene,sugar=0;
+    if(ration_card_type==1){
+      rice=(adults+children)*5;
+      wheat=(adults+children)*5;
+      sugar=(adults+children)*1;
+      kerosene=(adults+children)*5;
+    }
+    else if(ration_card_type==2){
+      rice=(adults+children)*6;
+      wheat=(adults+children)*6;
+      sugar=(adults+children)*1;
+      kerosene=(adults+children)*6;
+    }
+    else {
+      rice=(adults+children)*7;
+      wheat=(adults+children)*7;
+      sugar=(adults+children)*2;
+      kerosene=(adults+children)*7;
+    }
     // console.log(password.toString());
     console.log('here')
     // await contract.methods.addConsumer(ration_card,
@@ -159,12 +179,20 @@ function AuthorityHome() {
           adults:adults,
           children:children
       })
+      await setDoc(doc(db, "allowance", ration_card),{
+        rice:rice,
+        wheat:wheat,
+        sugar:sugar,
+        kerosene:kerosene
+      })
       alert("New Consumer is added")
     console.log('We here')
     handleClose1()
     } catch (err) {
       alert(err)
     }
+
+    
     
     
     
@@ -208,9 +236,15 @@ function AuthorityHome() {
       isBlacklisted:isBlacklisted,
       wallet_addr:wallet_addr
       })
+      await setDoc(doc(db, "stock", vendor_id),{
+        rice:500,
+        wheat:500,
+        sugar:100,
+        kerosene:700
+      })
       alert("New Vendor is added")
     console.log('We here')
-    // handleClose2()
+    handleClose2()
     } catch (err) {
       console.log(err)
     }
@@ -221,20 +255,103 @@ function AuthorityHome() {
   const handleRefillStock=async (event)=>{
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const vendor_id=parseInt(event.target.vid.value);
-    await contract.methods.refillStock(vendor_id).send({from: accounts[0]})
+    const vendor_id=event.target.vid.value;
+    // await contract.methods.refillStock(vendor_id).send({from: accounts[0]})
+    try {
+      
+      await setDoc(doc(db, "stock", vendor_id),{
+        rice:500,
+        wheat:500,
+        sugar:100,
+        kerosene:700
+      })
+      // alert("Stock Refilled")
+      alert('Stock updated successfully for vendor!');
+      handleClose4();
+    } catch (err) {
+      console.log(err)
+    }
+    console.log('success');
+    
     console.log('success')
-    alert('Stock updated successfully for vendor!');
-    handleClose4();
+    
   }
+
+  const refillAll=async(event)=>{
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const a = query(collection(db, 'stock'))
+    onSnapshot(a, (querySnapshot) => {
+      querySnapshot.forEach(function(doc) {
+        doc.ref.update({
+          rice:500,
+          wheat:500,
+          sugar:100,
+          kerosene:700
+        });
+    });
+    })
+    
+    
+    
+
+  }
+
+
   const refillAllowance=async(event)=>{
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const c_id=event.target.cid.value;
-    await contract.methods.refillAllowance(c_id).send({from: accounts[0]});
-    console.log('success');
-    alert('Allowance updated successfully for consumers!');
+    const consumerDocRef = doc(db, "consumer", c_id);
+      const consumerdocSnap = await getDoc(consumerDocRef);
+
+      
+
+      let consumer1;
+      if (consumerdocSnap.exists()) {
+        consumer1 = consumerdocSnap.data();
+        console.log(consumer1);
+      }
+
+      // const consumer1=await instance.methods.getConsumer(consumerId).call();
+      // setConsumer(consumer1)
+    let rice,wheat,kerosene,sugar=0;
+    let adults=consumer1.adults;
+    let children=consumer1.children;
+    if(consumer1.ration_card_type==1){
+      rice=(adults+children)*5;
+      wheat=(adults+children)*5;
+      sugar=(adults+children)*1;
+      kerosene=(adults+children)*5;
+    }
+    else if(consumer1.ration_card_type==2){
+      rice=(adults+children)*6;
+      wheat=(adults+children)*6;
+      sugar=(adults+children)*1;
+      kerosene=(adults+children)*6;
+    }
+    else {
+      rice=(adults+children)*7;
+      wheat=(adults+children)*7;
+      sugar=(adults+children)*2;
+      kerosene=(adults+children)*7;
+    }
+    // await contract.methods.refillAllowance(c_id).send({from: accounts[0]});
+    try {
+      
+      await setDoc(doc(db, "allowance", c_id),{
+        rice:rice,
+        wheat:wheat,
+        sugar:sugar,
+        kerosene:kerosene
+      })
+      // alert("Stock Refilled")
+      alert('Allowance updated successfully for consumers!');
     handleClose5();
+    } catch (err) {
+      console.log(err)
+    }
+    
 
   }
   const handleBlackList=async(event)=>{
@@ -833,6 +950,7 @@ function AuthorityHome() {
       </Modal>
       <Button sx={{ border: 1,borderColor: '#351E10', marginTop: 3, color:"white", backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' } }} onClick={handleOpen5} fullWidth>Refill Allowance </Button>
       <Button sx={{ border: 1,borderColor: '#351E10', color:"white", marginTop: 3,backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' } }} onClick={handleOpen4} fullWidth>Refill Stock</Button>
+      <Button sx={{ border: 1,borderColor: '#351E10', color:"white", marginTop: 3,backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' } }} onClick={refillAll} fullWidth>Refill All</Button>
       
 <br></br><br></br><hr></hr>
           <Button sx={{ border: 1,borderColor: '#351E10', color:"white",marginTop: 3, backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' } }} onClick={handleOpen3} fullWidth>View Complains</Button>

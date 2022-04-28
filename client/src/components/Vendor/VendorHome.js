@@ -49,7 +49,7 @@ import 'react-block-ui/style.css';
 import { border } from '@mui/system';
 import RectangleIcon from '@mui/icons-material/Rectangle';
 import {db} from '../../Firebase'
-import {collection, addDoc, doc, getDoc, query, where, onSnapshot } from 'firebase/firestore'
+import {collection, addDoc, doc, getDoc, query, where, onSnapshot,  setDoc } from 'firebase/firestore'
 
 function VendorHome(props) {
     const [web3, setWeb3] = useState(null);
@@ -125,18 +125,120 @@ function VendorHome(props) {
       event.preventDefault();
       const data = new FormData(event.currentTarget);
       const cid1=data.get('cid');
-      const vid1=parseInt(location.state.id);
+      const vid1=location.state.id;
       const rice1=parseInt(data.get('rice'));
       const wheat1=parseInt(data.get('wheat'));
       const sugar1=parseInt(data.get('sugar'));
       const kerosene1=parseInt(data.get('kerosene'));
       const commodity = [rice1,wheat1,sugar1,kerosene1]
       console.log(contract);
-      await contract.methods.updateAllowance(cid1,vid1,commodity,getCurrentDateTime()).send({from: accounts[0]})
-      alert("Allowance Updated!");
-      console.log('We here');
-      handleClose();
+      // await contract.methods.updateAllowance(cid1,vid1,commodity,getCurrentDateTime()).send({from: accounts[0]})
+      const stockDocRef = doc(db, "stock", vid1);
+      const stockdocSnap = await getDoc(stockDocRef);
+      const allowanceDocRef = doc(db, "allowance", cid1);
+      const allowancedocSnap = await getDoc(allowanceDocRef);
+
+      let stock1,allowance1;
+      let message='';
+      let ricestock,wheatstock,kerosenestock,sugarstock,riceallowance,wheatallowance,sugarallowance,keroseneallowance;
+      if (stockdocSnap.exists()) {
+        stock1 = stockdocSnap.data();
+        if (allowancedocSnap.exists()) {
+          allowance1 = allowancedocSnap.data();        
+          if(stock1.rice-rice1>=0 && allowance1.rice-rice1>=0){
+            ricestock=stock1.rice-rice1
+            riceallowance=allowance1.rice-rice1
+          }
+          else{
+            ricestock=stock1.rice; 
+            riceallowance=allowance1.rice; 
+            message='Rice not updated! '
+          }
+          if(stock1.wheat-wheat1>=0 && allowance1.wheat-wheat1>=0){
+            wheatstock=stock1.wheat-wheat1
+            wheatallowance=allowance1.wheat-wheat1
+          }
+          else{
+            wheatstock=stock1.wheat; 
+            wheatallowance=allowance1.wheat;
+            message+='Wheat not updated! '
+          }
+          if(stock1.sugar-sugar1>=0 && allowance1.sugar-sugar1>=0){
+            sugarstock=stock1.sugar-sugar1
+            sugarallowance=allowance1.sugar-sugar1
+          }
+          else{
+            sugarstock=stock1.sugar; 
+            sugarallowance=allowance1.sugar;
+            message+='Sugar not updated! '
+          }
+          if(stock1.kerosene-kerosene1>=0 && allowance1.kerosene-kerosene1>=0){
+            kerosenestock=stock1.kerosene-kerosene1
+            keroseneallowance=allowance1.kerosene-kerosene1
+          }
+          else{
+            kerosenestock=stock1.kerosene; 
+            keroseneallowance=allowance1.kerosene;
+            message='Kerosene not updated! '
+          }
+        }
+      }
+
+      try {
+        await setDoc(doc(db, "stock", vid1),{
+          vendor_id:parseInt(vid1),
+          rice:ricestock,
+          wheat:wheatstock,
+          sugar:sugarstock,
+          kerosene:kerosenestock
+        })
+        await setDoc(doc(db, "allowance", cid1),{
+          consumer_id: cid1,
+          rice:riceallowance,
+          wheat:wheatallowance,
+          sugar:sugarallowance,
+          kerosene:keroseneallowance
+        })
+        await addDoc(collection(db, "transaction"),{
+          vendor_id: parseInt(vid1),
+          consumer_id: cid1,
+          rice:rice1,
+          wheat:wheat1,
+          sugar:sugar1,
+          kerosene:kerosene1
+        })
+        alert("Transaction Successful")
+        alert(message)
+        alert("Allowance Updated!");
+      console.log('We here')
+      handleClose()
+      } catch (err) {
+        console.log(err)
+      }
       
+      console.log('We here');
+      // handleClose();
+      
+    }
+
+    const handleBlockSubmit = async (event)=>{
+      let transactionlist = []
+      let bhejneWalaData =[]
+      const p = query(collection(db, 'transaction'), where("vendor_id", "==", parseInt(location.state.id)))
+        onSnapshot(p, (querySnapshot) => {
+          transactionlist = (querySnapshot.docs.map(doc => ({
+            data: doc.data()
+          })))
+          transactionlist.forEach((transaction)=>{
+            bhejneWalaData.push(JSON.stringify(transaction.data))
+          })
+          console.log(bhejneWalaData)
+        })
+        // console.log(bhejneWalaData)
+        setTimeout(()=>{
+          console.log(bhejneWalaData)
+          contract.methods.pushTransactions(bhejneWalaData, parseInt(location.state.id)).send({from: accounts[0]})
+        },2000) 
     }
     const handleLogout=(event)=>{
       return navigate("/");
@@ -203,9 +305,9 @@ function VendorHome(props) {
       const vendorId=location.state.id
       // console.log(typeof(vendorId));
       // const consumerId=props.consumerId;
-      const stock1 = await instance.methods.getStock(vendorId).call();
-      console.log(stock1);
-      setStock(stock1);
+      // const stock1 = await instance.methods.getStock(vendorId).call();
+      // console.log(stock1);
+      // setStock(stock1);
       // console.log(stock1);
       // const vendor1=await instance.methods.getVendor(vendorId).call();
 
@@ -226,9 +328,20 @@ function VendorHome(props) {
             data: doc.data()
           })))
         })
-      let allconsumers = await instance.methods.getAllConsumers().call();
-      console.log(allconsumers);
+
+        const stockDocRef = doc(db, "stock", vendorId);
+        const stockdocSnap = await getDoc(stockDocRef);
+
+        let stock1;
+        if (stockdocSnap.exists()) {
+          stock1 = stockdocSnap.data();
+        }
+        setStock(stock1);
+      // let allconsumers = await instance.methods.getAllConsumers().call();
+      // console.log(allconsumers);
       let list = []
+      
+        
       // setIsblacklisted(vendor1[6]);
       // console.log(vendor1[6]);
       
@@ -237,12 +350,7 @@ function VendorHome(props) {
       //   return c[6]==vendorId;
       // });
 
-      allconsumers.forEach( async (element) => {
-        let c = await instance.methods.getConsumer(element).call();
-        if(c[6]===vendorId){
-          await list.push(c);
-        }
-      });
+      
 
       
       setTimeout(() => {
@@ -345,6 +453,7 @@ function VendorHome(props) {
                           </CardContent>
                         </Card>                        
                       <Button  sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' } }} fullWidth onClick={handleOpen}>Update Allowance</Button>
+                      <Button  sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' }, marginTop:3 }} fullWidth onClick={handleBlockSubmit}>Push to Blockchain</Button>
                       <Button  sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#991B16", "&:hover":{backgroundColor: "#8B0000", boxShadow:9, borderColor:'white' }, marginTop:3 }} fullWidth onClick={handleLogout}>Logout</Button>
                         
                         </div>
@@ -534,10 +643,10 @@ function VendorHome(props) {
                           <CardContent>
                             <p style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10", fontSize: 20, fontWeight:"bold"}}> <GradingIcon style={{fontSize:30, }}></GradingIcon>Current Stock</p>
                               <br></br><hr></hr><br></br>
-                              <GrainIcon sx={{ position: 'relative', top: 5}}/>  Rice: {stock[0]} <br></br> <br></br>
-                              <GrassIcon sx={{ position: 'relative', top: 5}}/>Wheat: {stock[1]} <br></br> <br></br>
-                              <HourglassBottomIcon sx={{ position: 'relative', top: 5}}/>  Sugar: {stock[2]} <br></br> <br></br>
-                              <SanitizerIcon sx={{ position: 'relative', top: 5}}/> Kerosene:  {stock[3]}<br></br> <br></br>
+                              <GrainIcon sx={{ position: 'relative', top: 5}}/>  Rice: {stock.rice} <br></br> <br></br>
+                              <GrassIcon sx={{ position: 'relative', top: 5}}/>Wheat: {stock.wheat} <br></br> <br></br>
+                              <HourglassBottomIcon sx={{ position: 'relative', top: 5}}/>  Sugar: {stock.sugar} <br></br> <br></br>
+                              <SanitizerIcon sx={{ position: 'relative', top: 5}}/> Kerosene:  {stock.kerosene}<br></br> <br></br>
                               </CardContent>
                               </Card>
 

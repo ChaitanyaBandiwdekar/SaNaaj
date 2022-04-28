@@ -18,7 +18,7 @@ import getWeb3 from "../../getWeb3";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import Modal from '@mui/material/Modal';
-import {collection, addDoc, doc, getDoc } from 'firebase/firestore'
+import {collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore'
 import {db} from '../../Firebase';
 
 require('dotenv').config()
@@ -313,14 +313,18 @@ function ConsumerLogin() {
   const forgotPassword = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const consumer = await contract.methods.getConsumer(data.get("ration-card-no")).call();
+    setRationNo(data.get("ration-card-no"));
+    // const consumer = await contract.methods.getConsumer(data.get("ration-card-no")).call();
+    const consumerRef = doc(db, "consumer", data.get("ration-card-no"));
+    const consumerDocSnap = await getDoc(consumerRef);
 
     const min = 1000;
     const max = 9999;
     const rand = Math.round(min + Math.random() * (max - min));
     setOtp(rand);
+    let consumer = consumerDocSnap.data();
     const message = {
-      to: consumer[4],
+      to: consumer.phone,
       body: 'Your OTP is ' + rand 
     }
     fetch('http://127.0.0.1:3001/api/messages', {
@@ -344,11 +348,16 @@ function ConsumerLogin() {
 
   const resetPassword = async (event) => {
     event.preventDefault();
+    var SHA256 = require("crypto-js/sha256");
     const data = new FormData(event.currentTarget);
     const otpForm = parseInt(data.get('otp'));
     if (otpForm == otp) {
       const newpass = data.get('new-password');
-      await contract.methods.resetConsumerPassword(rationNo, newpass).send({from: accounts[0]});
+      // await contract.methods.resetConsumerPassword(rationNo, newpass).send({from: accounts[0]})
+      const consumerRef = doc(db, "consumer", rationNo);
+      await updateDoc(consumerRef, {
+        password: SHA256(data.get('new-password')).toString()
+      });
       setRationNo("");
       handleCloseOtpModal();
       handleClose();
