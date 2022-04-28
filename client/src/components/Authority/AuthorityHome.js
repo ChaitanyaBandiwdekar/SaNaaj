@@ -42,9 +42,12 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
+
 import {collection, query, orderBy, onSnapshot} from "firebase/firestore"
-import { doc, setDoc } from "firebase/firestore"; 
-import {db} from '../../Firebase'
+import { doc, setDoc, updateDoc, getDoc  } from "firebase/firestore"; 
+
+import {db} from '../../Firebase';
+
 
 
 function AuthorityHome() {
@@ -83,6 +86,14 @@ function AuthorityHome() {
       return "green";
     }
   };
+  function getBlacklisted(isBlacklisted){
+    if(isBlacklisted){
+      return "Yes";
+    }
+    else{
+      return "No";
+    }
+  };
   const [open1, setOpen1] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
   const [open3, setOpen3] = React.useState(false);
@@ -114,13 +125,11 @@ function AuthorityHome() {
     const adults=parseInt(event.target.adults.value);
     const children=parseInt(event.target.children.value);
     const phone=event.target.phone.value;
-    const location=event.target.location.value;
-    const vendor_id=parseInt(event.target.vendor_id.value);
-    const password=event.target.password.value; 
-    
+   const location=event.target.location.value;
+       const vendor_id=parseInt(event.target.vendor_id.value);
+    const password=event.target.password.value;  
     var SHA256 = require("crypto-js/sha256");
-    console.log(SHA256(password).toString());
-
+    console.log(SHA256(password).toString());      
     console.log(contract);
     console.log(ration_card);
     // console.log(password.toString());
@@ -163,13 +172,15 @@ function AuthorityHome() {
   const handleAddVendor= async (event)=>{
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const  isBlacklisted=event.target. isBlacklisted.value;
+    const  isBlacklisted=false;
     const first_name=event.target.first_Name.value;
     const last_name=event.target.last_Name.value
     const phone=event.target.Phone.value;
     const location=event.target.Location.value;
-    const vendor_id=parseInt(event.target.vendor_Id.value);
-    const password=event.target.Password.value; 
+    const vendor_id=event.target.vendor_Id.value;
+    const password=event.target.Password.value;
+    var SHA256 = require("crypto-js/sha256");
+    console.log(SHA256(password).toString()); 
     const wallet_addr=event.target.wallet_addr.value;
     console.log(contract);
     console.log(vendor_id);
@@ -187,20 +198,20 @@ function AuthorityHome() {
 
     try {
       await setDoc(doc(db, "vendor", vendor_id),{
-        vendor_id:vendor_id,
+        vendor_id:parseInt(vendor_id),
       first_name:first_name,
       last_name:last_name,
       phone:phone,
       location:location,
-      password:password,
-    //   isBlacklisted,
-    //   wallet_addr
+      password:SHA256(password).toString(),
+      isBlacklisted:isBlacklisted,
+      wallet_addr:wallet_addr
       })
       alert("New Vendor is added")
     console.log('We here')
-    handleClose2()
+    // handleClose2()
     } catch (err) {
-      alert(err)
+      console.log(err)
     }
     
     
@@ -228,25 +239,60 @@ function AuthorityHome() {
   const handleBlackList=async(event)=>{
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const v_id=parseInt(event.target.vId.value);
-    await contract.methods.blacklist(v_id).send({from: accounts[0]});
-    console.log('success');
-    alert('Vendor status updated!');
+    const v_id=event.target.vId.value;
+    // await contract.methods.blacklist(v_id).send({from: accounts[0]});
+    const vendorDocRef = doc(db, "vendor", v_id);
+    const vendordocSnap = await getDoc(vendorDocRef);
+    
+
+      let vendor1;
+      if (vendordocSnap.exists()) {
+        vendor1 = vendordocSnap.data();
+      }
+      
+      
+
+      try{
+        await updateDoc(vendorDocRef, {
+          isBlacklisted: !vendor1.isBlacklisted,
+          
+          
+        })
+        alert('Updated Vendor Status!');
+        handleClose6()
+        
+      } 
+     
+        catch (err) {
+        alert(err)
+      }
+
 
   }
   const handleCardType=async(event)=>{
     event.preventDefault();
     const c_id=event.target.C_id.value;
     const newcardtype=event.target.card_type.value;
-    const consumer=await contract.methods.getConsumer(c_id).call();
-    if(consumer[1]==newcardtype){
-      alert('Already same card type!');
-
-    }
-    else{
-      await contract.methods.updateCardType(c_id,newcardtype).send({from:accounts[0]});
+    const taskDocRef = doc(db, 'consumer', c_id)
+    // const consumer=await contract.methods.getConsumer(c_id).call();
+    try{
+      await updateDoc(taskDocRef, {
+        ration_card_type: newcardtype,
+        
+      })
       alert('Updated card type!');
+      handleClose7()
+    } catch (err) {
+      alert(err)
     }
+    // if(consumer[1]==newcardtype){
+    //   alert('Already same card type!');
+
+    // }
+    // else{
+    //   await contract.methods.updateCardType(c_id,newcardtype).send({from:accounts[0]});
+    //   alert('Updated card type!');
+    // }
   }
   const handleLogout=(event)=>{
     return navigate("/");
@@ -296,8 +342,8 @@ function AuthorityHome() {
     setAccounts(accounts);
     setContract(instance);
 
-    let allconsumers = await instance.methods.getAllConsumers().call();
-    let allvendors = await instance.methods.getAllVendors().call();
+    // let allconsumers = await instance.methods.getAllConsumers().call();
+    // let allvendors = await instance.methods.getAllVendors().call();
     let list = []
     let vlist = []
     // let allcomplaints= await instance.methods.getAllComplaints().call();
@@ -310,124 +356,43 @@ function AuthorityHome() {
       })))
     })
 
+    // let allconsumers = [];
+
+    const c = query(collection(db, 'consumer'))
+    onSnapshot(c, (querySnapshot) => {
+      setConsumerList(querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        data: doc.data()
+      })))
+    })
+
+    const v = query(collection(db, 'vendor'))
+    onSnapshot(v, (querySnapshot) => {
+      setVendorList(querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        data: doc.data()
+      })))
+    })
+
+
     
     let allcomplaints = complaitList;
     // setComplaitList(allcomplaints);
     console.log(allcomplaints);
 
 
-    allconsumers.forEach(async (element) => {
-      let c = await instance.methods.getConsumer(element).call();
-      list.push(c);
-    });
+    // allconsumers.forEach(async (element) => {
+    //   let c = await instance.methods.getConsumer(element).call();
+    //   list.push(c);
+    // });
 
-    allvendors.forEach(async (element) => {
-      let v = await instance.methods.getVendor(element).call();
-      vlist.push(v);
-    });
-    function getBlacklisted(isBlacklisted){
-      if(isBlacklisted){
-        return "Yes";
-      }
-      else{
-        return "No";
-      }
-    };
+    // allvendors.forEach(async (element) => {
+    //   let v = await instance.methods.getVendor(element).call();
+    //   vlist.push(v);
+    // });
+    
 
-    setTimeout(() => {
-      console.log(vlist);
-      const list1 = list.map((consumer,index) =>
-        <div>
-            <Card sx={{ minWidth: 275, padding: 1, margin: 1, backgroundColor:"#DDAA00"}}>
-              <CardContent sx={{paddingX: 0 }}>
-              <Grid container spacing={1} columns={16} style={{fontFamily: 'Montserrat'}}>
-                  <Grid item xs={8}>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Name : {consumer[2]} {consumer[3]}</h5>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>ConsumerId : {consumer[0]}</h5>
-                  </Grid>
-                  <Grid item xs={7}>
-                    
-                    <h5 style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10"}}>CardType: {getColor(consumer[1])}   <RectangleIcon style={{color:getColorName(consumer[1])}}></RectangleIcon> </h5>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Phone: {consumer[4]}</h5>
-                  </Grid>
-                </Grid>
-              </CardContent>
-          </Card> 
-          <hr></hr>
-          </div>                    
-     );
 
-     const list2 = vlist.map((vendor,index) =>
-        <div>
-            <Card sx={{ minWidth: 275, padding: 1, margin: 1, backgroundColor:"#DDAA00"}}>
-              <CardContent sx={{paddingX: 0 }}>
-              <Grid container spacing={1} columns={16} style={{fontFamily: 'Montserrat'}}>
-                  <Grid item xs={8}>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Name : {vendor[1]} {vendor[2]}</h5>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>VendorId : {vendor[0]}</h5>
-                  </Grid>
-                  {/* <Grid item xs={7}>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>CardType: {getColor(consumer[1])}</h5>
-                  </Grid> */}
-                  <Grid item xs={8}>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Phone: {vendor[3]}</h5>
-                  </Grid>
-                  <Grid item xs={8}>
-                  {/* <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"black", fontSize: 'small' }} onClick={() => toggleBlacklist(vendor)}>{vendor[6] ? 'Unblacklist': 'Blacklist'} </Button> */}
-                  <h5 style={{backgoundColor: "#DDAA00"}}>Blacklisted : {getBlacklisted(vendor[6])}</h5>
-                  </Grid>
-                </Grid>
-              </CardContent>
-          </Card> 
-          <hr></hr>
-          </div>                    
-     );
-     const list3 = allcomplaints.map((complaint,index) =>
-        <div>
-            <Card sx={{ minWidth: 275, padding: 1, margin: 1, }}>
-              <CardContent sx={{paddingX: 0 }}>
-              <Grid container spacing={1} columns={16} style={{fontFamily: 'Montserrat'}}>
-              <Grid item fullWidth>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Complain Number : {index+1}</h5>
-                  </Grid>
-                  <Grid item fullWidth>
-                    <h5 style={{backgoundColor: "#DDAA00"}}></h5>
-                  </Grid>
-                  <Grid item fullWidth>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Ration ID : {complaint.data.ration_id}</h5>
-                  </Grid>
-                  {/* <Grid item fullWidth>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>VendorId : {complaint[1]}</h5>
-                  </Grid> */}
-                  {/* <Grid item xs={7}>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>CardType: {getColor(consumer[1])}</h5>
-                  </Grid> */}
-                  <Grid item fullWidth>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Description: {complaint.data.complaint_content}</h5>
-                  </Grid>
-                  <Grid item fullWidth>
-                    <h5 style={{backgoundColor: "#DDAA00"}}>Time : {complaint.data.time}</h5>
-                  </Grid>
-                  <Grid item xs={7}>
-                  {/* <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"black", fontSize: 'small' }} onClick={() => toggleBlacklist(vendor)}>{vendor[6] ? 'Unblacklist': 'Blacklist'} </Button> */}
-                  </Grid>
-                </Grid>
-              </CardContent>
-          </Card> 
-          <hr></hr>
-          </div>                    
-     );
-
-     setConsumerList(list1);
-     setVendorList(list2);
-     setallcomplaintslist(list3)
-    }, 2000);
   }, []);
 
   // const toggleBlacklist = async function (vendor) {
@@ -453,7 +418,30 @@ function AuthorityHome() {
                 Consumer List
               </Typography>
               <List sx={{ maxHeight: '65vh', overflowY: 'scroll'}} className="scroll">
-                {consumerList}
+                {consumerList.map((consumer,index) =>
+        <div>
+            <Card sx={{ minWidth: 275, padding: 1, margin: 1, backgroundColor:"#DDAA00"}}>
+              <CardContent sx={{paddingX: 0 }}>
+              <Grid container spacing={1} columns={16} style={{fontFamily: 'Montserrat'}}>
+                  <Grid item xs={8}>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>Name : {consumer.data.first_name} {consumer.data.last_name}</h5>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>ConsumerId : {consumer.data.ration_card}</h5>
+                  </Grid>
+                  <Grid item xs={7}>
+                    
+                    <h5 style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10"}}>CardType: {getColor(consumer.data.ration_card_type)}   <RectangleIcon style={{color:getColorName(consumer.data.ration_card_type)}}></RectangleIcon> </h5>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>Phone: {consumer.data.phone}</h5>
+                  </Grid>
+                </Grid>
+              </CardContent>
+          </Card> 
+          <hr></hr>
+          </div>                    
+     )}
               </List>
               
             </CardContent>
@@ -466,7 +454,33 @@ function AuthorityHome() {
                 Vendor List
               </Typography>
               <List sx={{ maxHeight: '65vh', overflowY: 'scroll'}} className="scroll">
-                {vendorList}
+                {vendorList.map((vendor,index) =>
+        <div>
+            <Card sx={{ minWidth: 275, padding: 1, margin: 1, backgroundColor:"#DDAA00"}}>
+              <CardContent sx={{paddingX: 0 }}>
+              <Grid container spacing={1} columns={16} style={{fontFamily: 'Montserrat'}}>
+                  <Grid item xs={8}>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>Name : {vendor.data.first_name} {vendor.data.last_name}</h5>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>VendorId : {vendor.data.vendor_id}</h5>
+                  </Grid>
+                  {/* <Grid item xs={7}>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>CardType: {getColor(consumer[1])}</h5>
+                  </Grid> */}
+                  <Grid item xs={8}>
+                    <h5 style={{backgoundColor: "#DDAA00"}}>Phone: {vendor.data.phone}</h5>
+                  </Grid>
+                  <Grid item xs={8}>
+                  {/* <Button sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"black", fontSize: 'small' }} onClick={() => toggleBlacklist(vendor)}>{vendor[6] ? 'Unblacklist': 'Blacklist'} </Button> */}
+                  <h5 style={{backgoundColor: "#DDAA00"}}>Blacklisted : {getBlacklisted(vendor.data.isBlacklisted)}</h5>
+                  </Grid>
+                </Grid>
+              </CardContent>
+          </Card> 
+          <hr></hr>
+          </div>                    
+     )}
               </List>
               
             </CardContent>
@@ -772,23 +786,14 @@ function AuthorityHome() {
               
               autoFocus
             />
+            
             <TextField
               margin="normal"
               required
               fullWidth
-              id="isBlacklisted"
-              label="Blacklisted(true/false)"
-              name="isBlacklisted"
-              
-              autoFocus
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="wallet_Addr"
+              id="wallet_addr"
               label="Wallet Address for Vendor"
-              name="wallet_Addr"
+              name="wallet_addr"
               
               autoFocus
             />
