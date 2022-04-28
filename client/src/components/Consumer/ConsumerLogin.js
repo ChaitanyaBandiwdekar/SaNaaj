@@ -18,7 +18,12 @@ import getWeb3 from "../../getWeb3";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import Modal from '@mui/material/Modal';
+import {collection, addDoc, doc, getDoc } from 'firebase/firestore'
+import {db} from '../../Firebase';
+
 require('dotenv').config()
+
+
 
 // // function Copyright(props) {
 // //   return (
@@ -266,6 +271,8 @@ function ConsumerLogin() {
 
   const handleSubmit = async (event) => {
         event.preventDefault();
+        var SHA256 = require("crypto-js/sha256");
+        console.log();
         // const { contract, accounts } = this.state;
         // this.setState({ web3, accounts, contract: instance }, this.runExample);
         const data = new FormData(event.currentTarget);
@@ -274,53 +281,28 @@ function ConsumerLogin() {
           password: data.get('password'),
         });
           const password_error = await contract.methods.checkConsumerCredentials(data.get('id'), data.get('password'));
-          const consumer = await contract.methods.getConsumer(data.get("id")).call();          
-          const consumerId = data.get("id");
-          console.log(consumerId);
+          // const consumer = await contract.methods.getConsumer(data.get("id")).call();
+          const consumerDocRef = doc(db, "consumer", data.get('id'));
+          const consumerdocSnap = await getDoc(consumerDocRef);
 
-          if(consumer[0] == ""){
-            setIdErr(true);
-          }
-          else{
+          let consumer;
+          if (consumerdocSnap.exists()) {
+            consumer = consumerdocSnap.data();
             setIdErr(false);
             console.log(consumer);
-        // console.log(transactions);
-    
-        console.log(consumer[7]);
-    
-        // let navigate = useNavigate();
-    
-        if(password_error){
-          setPassErr(false);
-          if(consumer[8] == accounts[0]){
-
-            setAddrErr(false);
-            // this.navigate('/consumer-home');
-            console.log("GG");
-            navigate('/consumer-home', {state:{id:consumerId}});
-            // this.props.history.push("/login-consumer");
-            // return <Navigate replace={true} to="/consumer-home" />
-            // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
-            // window.location.href='/consumer-home';
-          
-          }
+            // console.log(transactions);
+            // console.log(consumer[7]);
+            if(consumer.password == SHA256(data.get('password')).toString()){
+              setPassErr(false)
+              navigate('/consumer-home', {state:{id:data.get('id')}});
+            }
+            else {
+              setPassErr(true)
+            }
+          }    
           else{
-            console.log("Incorrect wallet address");
-            // navigate('/login-consumer');
-            setAddrErr(true);
-            // navigate.push('/login-consumer');
-            // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
-          }
-        }
-        else{
-          console.log("Incorrect password");
-          // navigate('/login-consumer');
-          setPassErr(true);
-          // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
-        }
-          }
-
-          
+            setIdErr(true);
+          }         
         // await contract.methods.updateAllowance(data.get('id'), 1, [1, 1, 0, 1], Date().toLocaleString()).send({from: accounts[0]});
         // const transactions = await contract.methods.getTransactions(data.get("id")).call();
         

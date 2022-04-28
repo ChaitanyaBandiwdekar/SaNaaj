@@ -114,11 +114,16 @@ function AuthorityHome() {
     const adults=parseInt(event.target.adults.value);
     const children=parseInt(event.target.children.value);
     const phone=event.target.phone.value;
-   const location=event.target.location.value;
-       const vendor_id=parseInt(event.target.vendor_id.value);
-    const password=event.target.password.value;        
+    const location=event.target.location.value;
+    const vendor_id=parseInt(event.target.vendor_id.value);
+    const password=event.target.password.value; 
+    
+    var SHA256 = require("crypto-js/sha256");
+    console.log(SHA256(password).toString());
+
     console.log(contract);
     console.log(ration_card);
+    // console.log(password.toString());
     console.log('here')
     // await contract.methods.addConsumer(ration_card,
     //   ration_card_type,
@@ -140,7 +145,7 @@ function AuthorityHome() {
           phone:phone,
           location:location,
           vendor_id:vendor_id,
-          password:password,
+          password:SHA256(password).toString(),
           adults:adults,
           children:children
       })
