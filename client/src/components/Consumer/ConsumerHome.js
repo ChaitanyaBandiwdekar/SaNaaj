@@ -45,7 +45,7 @@ import SanitizerIcon from '@mui/icons-material/Sanitizer';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import GrassIcon from '@mui/icons-material/Grass';
 import {db} from '../../Firebase'
-import {collection, addDoc, doc, getDoc } from 'firebase/firestore'
+import {collection, addDoc, doc, getDoc, where, onSnapshot, query } from 'firebase/firestore'
 
 function ConsumerHome(props) {
     const [web3, setWeb3] = useState(null);
@@ -54,7 +54,7 @@ function ConsumerHome(props) {
     const [passErr, setPassErr] = useState(false);
     const [addrErr, setAddrErr] = useState(false);
     const [allowance, setAllowance] = useState({});
-    const [transactions, setTransactions] = useState({});
+    const [transactions, setTransactions] = useState([]);
     const [transactionlist, setTransactionlist] = useState([]);
     const [consumer, setConsumer] = useState([]);
     const [color, setColor] = useState("black");
@@ -183,21 +183,16 @@ function ConsumerHome(props) {
 
       // const consumer1=await instance.methods.getConsumer(consumerId).call();
       setConsumer(consumer1)
-      const transaction1 = await instance.methods.getTransactions(consumerId).call();
+      // const transaction1 = await instance.methods.getTransactions(consumerId).call();
       
-      setTransactions(transaction1);
-
-
-      
-
-      // console.log(transactions);
-      const Item = styled(Paper)(({ theme }) => ({
-        backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-        ...theme.typography.body2,
-        padding: theme.spacing(1),
-        textAlign: 'left',
-        color: theme.palette.text.secondary,
-      }));
+      const q = query(collection(db, 'transaction'), where("consumer_id", "==", consumerId))
+        onSnapshot(q, (querySnapshot) => {
+          setTransactions(querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            data: doc.data()
+          })))
+        });
+        
       const cardtype= consumer1[1];
       console.log(consumer1[1])
       const c=setColor("blue");
@@ -216,71 +211,16 @@ function ConsumerHome(props) {
         setColorname("green");
        
       }
-      
-      
-      const list = transaction1.map((transaction,index) =>
-      // <ListItem alignItems="flex-start"  key={transaction[0]} sx={{ width: '100%', fontSize: 20}}>
-        
-          /* <ListItem>Quantity:
-            <List>
-              <ListItem>Rice: {transaction[2][0]}</ListItem>
-              <ListItem>Wheat: {transaction[2][1]}</ListItem>
-              <ListItem>Sugar: {transaction[2][2]}</ListItem>
-              <ListItem>Kerosene: {transaction[2][3]}</ListItem>
-            </List>
-          </ListItem>
-          <ListItem>Time: {transaction[3]}</ListItem>
-        </List>
-        {transaction}
-    </ListItem> */
     
-                            /* <ListItemText
-                              primary={<h6> Transaction Number:  {index+1}</h6> }
-                              secondary={
-                                <List>
-              <ListItem>
-                Rice: {transaction[2][0]}</ListItem>
-              <ListItem>Wheat: {transaction[2][1]}</ListItem>
-              <ListItem>Sugar: {transaction[2][2]}</ListItem>
-              <ListItem>Kerosene: {transaction[2][3]}</ListItem>
-              <ListItem>Time: {transaction[3]}</ListItem>
-              <hr></hr>
-            </List>
-            </ListItem> */
-            <Card sx={{ minWidth: 275, padding: 1, margin: 1, backgroundColor:"#DDAA00"}}>
-              <CardContent>
-              <Grid container spacing={1} columns={16} style={{fontFamily: 'Montserrat'}}>
-        <Grid item xs={8}>
-          
-            <h5 style={{backgoundColor: "#DDAA00"}}>Transaction : {index+1}</h5>
-          
-          
-        </Grid>
-        <Grid item xs={7}>
-        <h5 style={{backgoundColor: "#DDAA00"}}>Time: {transaction[3]}</h5>
-        </Grid>
-      </Grid>
-      <br/>
-      <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-              <Grid item xs={6}>
-                <Item><h5>Rice: {transaction[2][0]}</h5></Item>
-              </Grid>
-              <Grid item xs={6}>
-                <Item><h5>Wheat: {transaction[2][1]}</h5></Item>
-              </Grid>
-              <Grid item xs={6}>
-                <Item><h5>Sugar: {transaction[2][2]}</h5></Item>
-              </Grid>
-              <Grid item xs={6}>
-                <Item><h5>Kerosene: {transaction[2][3]}</h5></Item>
-              </Grid>
-            </Grid>
-              </CardContent>
-              
-            
-          </Card>)
-    setTransactionlist(list)
     }, []);
+
+    const Item = styled(Paper)(({ theme }) => ({
+      backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+      ...theme.typography.body2,
+      padding: theme.spacing(1),
+      textAlign: 'left',
+      color: theme.palette.text.secondary,
+    }));
   
     // const handleSubmit = async (event) => {
     //       event.preventDefault();
@@ -464,7 +404,39 @@ function ConsumerHome(props) {
                             <p style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10", fontSize: 20, fontWeight:"bold"}}> <ReceiptLongIcon style={{fontSize:30, }}></ReceiptLongIcon>My Transactions</p>
                               <br></br><hr></hr><br></br>
                               <List sx={{ width: '100%', maxHeight: 530, overflowY: 'scroll' }} className="scroll">
-                        {transactionlist}
+                                            {transactions.map((transaction,index) =>
+                                <Card sx={{ minWidth: 275, padding: 1, margin: 1, backgroundColor:"#DDAA00"}}>
+                                  <CardContent>
+                                  <Grid container spacing={1} columns={16} style={{fontFamily: 'Montserrat'}}>
+                            <Grid item xs={8}>
+                              
+                                <h5 style={{backgoundColor: "#DDAA00"}}>Transaction : {index+1}</h5>
+                              
+                              
+                            </Grid>
+                            <Grid item xs={7}>
+                            <h5 style={{backgoundColor: "#DDAA00"}}>Time: {transaction.data.time}</h5>
+                            </Grid>
+                          </Grid>
+                          <br/>
+                          <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                                  <Grid item xs={6}>
+                                    <Item><h5>Rice: {transaction.data.rice}</h5></Item>
+                                  </Grid>
+                                  <Grid item xs={6}>
+                                    <Item><h5>Wheat: {transaction.data.wheat}</h5></Item>
+                                  </Grid>
+                                  <Grid item xs={6}>
+                                    <Item><h5>Sugar: {transaction.data.sugar}</h5></Item>
+                                  </Grid>
+                                  <Grid item xs={6}>
+                                    <Item><h5>Kerosene: {transaction.data.kerosene}</h5></Item>
+                                  </Grid>
+                                </Grid>
+                                  </CardContent>
+                                  
+                                
+                              </Card>)}
                               </List>
                               </CardContent>
                               </Card>

@@ -191,22 +191,23 @@ function VendorHome(props) {
           wheat:wheatstock,
           sugar:sugarstock,
           kerosene:kerosenestock
-        })
+        });
         await setDoc(doc(db, "allowance", cid1),{
           consumer_id: cid1,
           rice:riceallowance,
           wheat:wheatallowance,
           sugar:sugarallowance,
           kerosene:keroseneallowance
-        })
+        });
         await addDoc(collection(db, "transaction"),{
           vendor_id: parseInt(vid1),
           consumer_id: cid1,
           rice:rice1,
           wheat:wheat1,
           sugar:sugar1,
-          kerosene:kerosene1
-        })
+          kerosene:kerosene1,
+          time: getCurrentDateTime()
+        });
         alert("Transaction Successful")
         alert(message)
         alert("Allowance Updated!");
