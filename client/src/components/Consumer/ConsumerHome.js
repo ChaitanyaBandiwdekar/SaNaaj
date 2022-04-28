@@ -45,7 +45,7 @@ import SanitizerIcon from '@mui/icons-material/Sanitizer';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import GrassIcon from '@mui/icons-material/Grass';
 import {db} from '../../Firebase'
-import {collection, addDoc, Timestamp} from 'firebase/firestore'
+import {collection, addDoc, doc, getDoc } from 'firebase/firestore'
 
 function ConsumerHome(props) {
     const [web3, setWeb3] = useState(null);
@@ -168,19 +168,26 @@ function ConsumerHome(props) {
       setWeb3(web3);
       setAccounts(accounts);
       setContract(instance);
-      // console.log(instance);
       const consumerId=location.state.id
-      // const consumerId=props.consumerId;
       const allowance1 = await instance.methods.getAllowance(consumerId).call();
-      // console.log(allowance1);
       setAllowance(allowance1);
-      // console.log(allowance);
-      const consumer1=await instance.methods.getConsumer(consumerId).call();
+
+      const consumerDocRef = doc(db, "consumer", consumerId);
+      const consumerdocSnap = await getDoc(consumerDocRef);
+
+      let consumer1;
+      if (consumerdocSnap.exists()) {
+        consumer1 = consumerdocSnap.data();
+        console.log(consumer1);
+      }
+
+      // const consumer1=await instance.methods.getConsumer(consumerId).call();
       setConsumer(consumer1)
-      // console.log(consumer1)
       const transaction1 = await instance.methods.getTransactions(consumerId).call();
-      // console.log(transaction1);
+      
       setTransactions(transaction1);
+
+
       
 
       // console.log(transactions);
@@ -271,14 +278,7 @@ function ConsumerHome(props) {
               </CardContent>
               
             
-          </Card>
-          
-           
-          
-                                
-
-                          
-     )
+          </Card>)
     setTransactionlist(list)
     }, []);
   
@@ -362,10 +362,10 @@ function ConsumerHome(props) {
                           <CardContent>
                             <p style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10", fontSize: 20, fontWeight:"bold"}}> <AccountCircleIcon style={{fontSize:30, }}></AccountCircleIcon>My Profile</p>
                               <br></br><hr></hr><br></br>
-                              <BadgeIcon sx={{ position: 'relative', top: 5}}/> {consumer[2]} {consumer[3]} <br></br> <br></br>
-                              <CreditCardIcon sx={{ position: 'relative', top: 5}}/> {consumer[0]} <br></br> <br></br>
-                              <PhoneIcon sx={{ position: 'relative', top: 5}}/> {consumer[4]} <br></br> <br></br>
-                              <HomeIcon sx={{ position: 'relative', top: 5}}/> {consumer[5]} <br></br> <br></br>
+                              <BadgeIcon sx={{ position: 'relative', top: 5}}/> {consumer.first_name} {consumer.last_name} <br></br> <br></br>
+                              <CreditCardIcon sx={{ position: 'relative', top: 5}}/> {consumer.ration_card} <br></br> <br></br>
+                              <PhoneIcon sx={{ position: 'relative', top: 5}}/> {consumer.phone} <br></br> <br></br>
+                              <HomeIcon sx={{ position: 'relative', top: 5}}/> {consumer.location} <br></br> <br></br>
                           </CardContent>
                         </Card>
                         

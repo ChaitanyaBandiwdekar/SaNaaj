@@ -104,6 +104,7 @@ function AuthorityHome() {
   const handleClose5 = () => setOpen5(false);
   const handleClose6 = () => setOpen6(false);
   const handleClose7 = () => setOpen7(false);
+  
   const handleAddConsumer= async (event)=>{
     event.preventDefault();
     const data = new FormData(event.currentTarget);

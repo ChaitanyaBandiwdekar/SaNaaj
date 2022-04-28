@@ -48,6 +48,8 @@ import BlockUi from 'react-block-ui';
 import 'react-block-ui/style.css';
 import { border } from '@mui/system';
 import RectangleIcon from '@mui/icons-material/Rectangle';
+import {db} from '../../Firebase'
+import {collection, addDoc, doc, getDoc, query, where, onSnapshot } from 'firebase/firestore'
 
 function VendorHome(props) {
     const [web3, setWeb3] = useState(null);
@@ -205,9 +207,25 @@ function VendorHome(props) {
       console.log(stock1);
       setStock(stock1);
       // console.log(stock1);
-      const vendor1=await instance.methods.getVendor(vendorId).call();
-      setVendor(vendor1)
+      // const vendor1=await instance.methods.getVendor(vendorId).call();
+
+      const vendorDocRef = doc(db, "vendor", vendorId);
+      const vendordocSnap = await getDoc(vendorDocRef);
+
+      let vendor1;
+      if (vendordocSnap.exists()) {
+        vendor1 = vendordocSnap.data();
+      }
+      setVendor(vendor1);
       // console.log(vendor1)
+
+      const q = query(collection(db, 'consumer'), where("vendor_id", "==", parseInt(vendorId)))
+        onSnapshot(q, (querySnapshot) => {
+          setConsumers(querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            data: doc.data()
+          })))
+        })
       let allconsumers = await instance.methods.getAllConsumers().call();
       console.log(allconsumers);
       let list = []
@@ -276,8 +294,6 @@ function VendorHome(props) {
      console.log(list1);
      setConsumerlist(list1)
       }, 1000);
-      console.log(list);
-      setConsumers(list);
 
       getCurrentDateTime();
 
@@ -321,11 +337,11 @@ function VendorHome(props) {
                           <CardContent>
                             <p style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10", fontSize: 20, fontWeight:"bold"}}> <AccountCircleIcon style={{fontSize:30, }}></AccountCircleIcon>My Profile</p>
                               <br></br><hr></hr><br></br>
-                              <BadgeIcon sx={{ position: 'relative', top: 5}}/> {vendor[1]} {vendor[2]} <br></br> <br></br>
-                              <CreditCardIcon sx={{ position: 'relative', top: 5}}/> {vendor[0]} <br></br> <br></br>
-                              <PhoneIcon sx={{ position: 'relative', top: 5}}/> {vendor[3]} <br></br> <br></br>
-                              <HomeIcon sx={{ position: 'relative', top: 5}}/> {vendor[4]} <br></br> <br></br>
-                              <CancelIcon sx={{ position: 'relative', top: 5}}/> Blacklisted - {getBlacklisted(vendor[6])} <br></br> <br></br>
+                              <BadgeIcon sx={{ position: 'relative', top: 5}}/> {vendor.first_name} {vendor.last_name} <br></br> <br></br>
+                              <CreditCardIcon sx={{ position: 'relative', top: 5}}/> {vendor.vendor_id} <br></br> <br></br>
+                              <PhoneIcon sx={{ position: 'relative', top: 5}}/> {vendor.phone} <br></br> <br></br>
+                              <HomeIcon sx={{ position: 'relative', top: 5}}/> {vendor.location} <br></br> <br></br>
+                              <CancelIcon sx={{ position: 'relative', top: 5}}/> Blacklisted - {getBlacklisted(vendor.isBlacklisted)} <br></br> <br></br>
                           </CardContent>
                         </Card>                        
                       <Button  sx={{ border: 1,borderColor: '#351E10', color:"white", backgroundColor:"#351E10", "&:hover":{backgroundColor: "#351E10", boxShadow:9, borderColor:'white' } }} fullWidth onClick={handleOpen}>Update Allowance</Button>
@@ -347,7 +363,51 @@ function VendorHome(props) {
                             <p style={{justifyContent:'center',display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10", fontSize: 20, fontWeight:"bold"}}> <PeopleIcon style={{fontSize:30, }}></PeopleIcon>My Consumers</p>
                               <br></br><hr></hr><br></br>
                               <List sx={{ width: '100%', maxHeight: 530, overflowY: 'scroll' }} className="scroll">
-                        {consumerlist}
+                              {consumers.map((consumer,index) =>
+                                <div>
+                                    <Card sx={{ minWidth: 275, padding: 1, margin: 1, backgroundColor:"#DDAA00", }}  >
+                                      <CardContent>
+                                      <Grid container spacing={1} columns={16} style={{fontFamily: 'Montserrat'}}>
+                                <Grid item xs={8}>
+                                <h5 style={{}}>Name : {consumer.data.first_name} {consumer.data.last_name}</h5>
+                                    
+                                  
+                                  
+                                </Grid>
+                                <Grid item xs={8}>
+                                <h5 style={{color:'#351E10', }}>ConsumerId : {consumer.data.ration_card}</h5>
+                                </Grid>
+                                <Grid item xs={8}>
+                                <h5 style={{display: 'flex',align: 'center',alignItems: 'center',flexWrap: 'wrap',color: "#351E10"}}><RectangleIcon style={{color:getColorName(consumer.data.ration_card_type)}}></RectangleIcon>CardType: {getColor(consumer[1])}</h5>
+                                </Grid>
+                                <Grid item xs={8}>
+                                <h5 style={{color:'#351E10'}}>Phone: {consumer.data.phone}</h5>
+                                </Grid>
+                              </Grid>
+                              {/* <h6>Quantity </h6>
+                              <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                                      <Grid item xs={6}>
+                                        <Item><h6>Rice: {transaction[2][0]}</h6></Item>
+                                      </Grid>
+                                      <Grid item xs={6}>
+                                        <Item><h6>Wheat: {transaction[2][1]}</h6></Item>
+                                      </Grid>
+                                      <Grid item xs={6}>
+                                        <Item><h6>Sugar: {transaction[2][2]}</h6></Item>
+                                      </Grid>
+                                      <Grid item xs={6}>
+                                        <Item><h6>Kerosene: {transaction[2][3]}</h6></Item>
+                                                      </Grid>
+                                                      </Grid>*/} 
+                                      </CardContent>
+                                      
+                                    
+                                  </Card> 
+                                  {/* <Button sx={{justifyContent:"center"}} fullWidth onClick={handleOpen}>Open modal</Button>    */}
+                                  <hr></hr>
+                                  </div>  
+                                                  
+                            )}
                               </List>
                               </CardContent>
                               </Card>
