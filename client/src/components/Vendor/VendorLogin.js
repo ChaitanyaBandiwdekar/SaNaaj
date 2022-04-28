@@ -20,6 +20,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import Modal from '@mui/material/Modal';
 
+import {collection, query, orderBy, onSnapshot} from "firebase/firestore"
+import { doc, setDoc, getDoc } from "firebase/firestore"; 
+import {db} from '../../Firebase'
+
+
 function VendorLogin() {
   const [web3, setWeb3] = useState(null);
   const [accounts, setAccounts] = useState(null);
@@ -90,7 +95,9 @@ function VendorLogin() {
   }, []);
 
   const handleSubmit = async (event) => {
-        event.preventDefault();
+    event.preventDefault();
+        var SHA256 = require("crypto-js/sha256");
+        console.log();
         // const { contract, accounts } = this.state;
         // this.setState({ web3, accounts, contract: instance }, this.runExample);
         const data = new FormData(event.currentTarget);
@@ -98,56 +105,34 @@ function VendorLogin() {
           ration: data.get('id'),
           password: data.get('password'),
         });
-        console.log(typeof(data.get("id")));
+          // const consumer = await contract.methods.getConsumer(data.get("id")).call();
+          const vendorDocRef = doc(db, "vendor", data.get('id'));
+          const vendordocSnap = await getDoc(vendorDocRef);
 
-        const password_error = await contract.methods.checkVendorCredentials(data.get('id'), data.get('password'));
-        const vendor = await contract.methods.getVendor(data.get("id")).call();
-        const vendorId = data.get("id");
-          console.log(vendorId);
-
-        if(vendor[0] == "0"){
-          setIdErr(true);
-        }
-        else{
-          setIdErr(false);
-        // await contract.methods.updateAllowance(data.get('id'), 1, [1, 1, 0, 1], Date().toLocaleString()).send({from: accounts[0]});
-        // const transactions = await contract.methods.getTransactions(data.get("id")).call();
-        console.log(vendor);
-        // console.log(transactions);
-    
-        console.log(vendor[5]);
-    
-        // let navigate = useNavigate();
-    
-        if(password_error){
-          setPassErr(false);
-          if(vendor[7] == accounts[0]){
-
-            setAddrErr(false);
-            // this.navigate('/consumer-home');
-            console.log("GG");
-            navigate('/vendor-home',{state:{id:vendorId}});
-            // this.props.history.push("/login-consumer");
-            // return <Navigate replace={true} to="/consumer-home" />
-            // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
-            // window.location.href='/consumer-home';
-          
-          }
+          let vendor;
+          if (vendordocSnap.exists()) {
+            vendor = vendordocSnap.data();
+            setIdErr(false);
+            console.log(vendor);
+            // console.log(transactions);
+            // console.log(consumer[7]);
+            if(vendor.password == SHA256(data.get('password')).toString()){
+              setPassErr(false)
+              if(accounts[0] == vendor.wallet_addr){
+                setAddrErr(false)
+                navigate('/vendor-home', {state:{id:parseInt(data.get('id'))}});
+              }
+              else{
+                setAddrErr(true);
+              }
+            }
+            else {
+              setPassErr(true);
+            }
+          }    
           else{
-            console.log("Incorrect wallet address");
-            // navigate('/login-consumer');
-            setAddrErr(true);
-            // navigate.push('/login-consumer');
-            // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
-          }
-        }
-        else{
-          console.log("Incorrect password");
-          // navigate('/login-consumer');
-          setPassErr(true);
-          // return <Route path="/consumer-home" element={ <Navigate to="/consumer-home" /> } />
-        }
-      }
+            setIdErr(true);
+          }         
         
       };
 
