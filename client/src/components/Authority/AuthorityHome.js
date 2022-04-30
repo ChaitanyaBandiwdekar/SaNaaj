@@ -61,11 +61,11 @@ function AuthorityHome() {
   let navigate = useNavigate();
  
   function getColor(cardType){
-    if(cardType==='1'){
+    if(cardType===1){
       return "Saffron";
       
     }
-    else if(cardType==='2'){
+    else if(cardType===2){
       return "White";
      
     }
@@ -74,11 +74,11 @@ function AuthorityHome() {
     }
   };
   function getColorName(cardType){
-    if(cardType==='1'){
+    if(cardType===1){
       return "FF4500";
       
     }
-    else if(cardType==='2'){
+    else if(cardType===2){
       return "white";
      
     }
@@ -390,7 +390,7 @@ function AuthorityHome() {
   const handleCardType=async(event)=>{
     event.preventDefault();
     const c_id=event.target.C_id.value;
-    const newcardtype=event.target.card_type.value;
+    const newcardtype=parseInt(event.target.card_type.value);
     const taskDocRef = doc(db, 'consumer', c_id)
     // const consumer=await contract.methods.getConsumer(c_id).call();
     try{
