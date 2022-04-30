@@ -238,35 +238,35 @@ function ConsumerLogin() {
   // Similar to componentDidMount and componentDidUpdate:
 
   useEffect(async () => {
-    const reloadCount = sessionStorage.getItem('reloadCount');
-    if(reloadCount < 2) {
-      sessionStorage.setItem('reloadCount', String(reloadCount + 1));
-      window.location.reload();
-    } else {
-      sessionStorage.removeItem('reloadCount');
-    }
+    // const reloadCount = sessionStorage.getItem('reloadCount');
+    // if(reloadCount < 2) {
+    //   sessionStorage.setItem('reloadCount', String(reloadCount + 1));
+    //   window.location.reload();
+    // } else {
+    //   sessionStorage.removeItem('reloadCount');
+    // }
 
-    console.log('hello');
-    console.log('hello1');
+    // console.log('hello');
+    // console.log('hello1');
 
-    const web3 = await getWeb3();
-    console.log(web3)
-    console.log('hello2')
+    // const web3 = await getWeb3();
+    // console.log(web3)
+    // console.log('hello2')
 
-    const accounts = await web3.eth.getAccounts();
-    console.log(accounts)
-    const networkId = await web3.eth.net.getId();
+    // const accounts = await web3.eth.getAccounts();
+    // console.log(accounts)
+    // const networkId = await web3.eth.net.getId();
 
-    const deployedNetwork = Sanaaj.networks[networkId];
-    const instance = new web3.eth.Contract(
-      Sanaaj.abi,
-      deployedNetwork && deployedNetwork.address,
-    );
-    console.log('Instance found');
-    // setState({ web3, accounts, contract: instance });
-    setWeb3(web3);
-    setAccounts(accounts);
-    setContract(instance);
+    // const deployedNetwork = Sanaaj.networks[networkId];
+    // const instance = new web3.eth.Contract(
+    //   Sanaaj.abi,
+    //   deployedNetwork && deployedNetwork.address,
+    // );
+    // console.log('Instance found');
+    // // setState({ web3, accounts, contract: instance });
+    // setWeb3(web3);
+    // setAccounts(accounts);
+    // setContract(instance);
   }, []);
 
   const handleSubmit = async (event) => {
@@ -280,7 +280,7 @@ function ConsumerLogin() {
           ration: data.get('id'),
           password: data.get('password'),
         });
-          const password_error = await contract.methods.checkConsumerCredentials(data.get('id'), data.get('password'));
+          // const password_error = await contract.methods.checkConsumerCredentials(data.get('id'), data.get('password'));
           // const consumer = await contract.methods.getConsumer(data.get("id")).call();
           const consumerDocRef = doc(db, "consumer", data.get('id'));
           const consumerdocSnap = await getDoc(consumerDocRef);
