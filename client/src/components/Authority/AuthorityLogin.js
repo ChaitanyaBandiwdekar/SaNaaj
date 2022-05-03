@@ -75,11 +75,14 @@ function AuthorityLogin() {
         // const { contract, accounts } = this.state;
         // this.setState({ web3, accounts, contract: instance }, this.runExample);
         const data = new FormData(event.currentTarget);
-        const password_error = await contract.methods.checkAdminCredentials(data.get('password'));
+        const isPasswordValid = await contract.methods.checkAdminCredentials(data.get('password')).call();
           
         const adminPassword = await contract.methods.getAdminPassword().call();
         const adminAddress = await contract.methods.getAdminAddress().call();
-        if(password_error){
+        console.log(adminPassword);
+        console.log(isPasswordValid);
+
+        if(isPasswordValid){
           setPassErr(false);
           if(adminAddress==accounts[0]){
 
